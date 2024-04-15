@@ -1,0 +1,219 @@
+:root {
+    --bg-color: #EDEDED;
+    --main-text-color: #0F0F0F;
+    --alt-text-color: #9A9A9A;
+    --red-light: #ca4754;
+    --red-dark: #7e2a2a;
+    --blue: #2b5f6d;
+}
+
+@font-face {
+    font-family: 'Helvetica Neue';
+    src: url(./font/HelveticaNeue-Medium.otf);
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: 'Helvetica Neue';
+    src: url(./font/HelveticaNeue-Heavy.otf);
+    font-weight: 700;
+}
+
+::selection {
+    background-color: var(--main-text-color);
+    color: var(--bg-color);
+}
+
+body {
+    background-color: var(--bg-color);
+    font-family: 'Helvetica Neue';
+    color: var(--main-text-color);
+    margin: 0;
+}
+
+/*   Reset   */
+
+p, h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+    color: unset;
+}
+
+/*   Global   */
+
+.link {
+    position: relative;
+    transition: letter-spacing 0.5s ease-in-out;
+  }
+  
+.link::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 2px;
+    bottom: -1px;
+    left: 0;
+    background-color: var(--main-text-color);
+    transform-origin: bottom right;
+    transition: transform 0.25s ease-in-out;
+}
+
+.link:hover::after, nav:hover .link::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+}
+
+.link-light {
+    position: relative;
+    transition: letter-spacing 0.5s ease-in-out;
+  }
+  
+.link-light::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 2px;
+    bottom: -1px;
+    left: 0;
+    background-color: var(--alt-text-color);
+    transform-origin: bottom right;
+    transition: transform 0.25s ease-in-out;
+}
+
+.link-light:hover::after, nav:hover .link-light::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+}
+
+/*   Toprow   */
+
+.toprow {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 1em;
+    margin-inline: 2em;
+}
+
+nav {
+    display: flex;
+    flex-direction: row;
+    column-gap: 0.75em;
+    height: 100%;
+    cursor: pointer;
+    margin-top: 0.75em;
+}
+
+.driverbot-info {
+    color: var(--alt-text-color);
+}
+
+.menu-icon {
+    padding: 0;
+    margin: 0;
+    user-select: none;
+}
+
+.menu-navtext {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+h1 {
+    margin: 0;
+    font-size: 4rem;
+    font-weight: 700;
+}
+
+/*   Footer   */
+
+footer {
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--bg-color);
+    position: fixed;
+    bottom: 0;
+    margin-inline: 2em;
+    width: calc(100% - 2*2em);
+    padding-bottom: 1em;
+    z-index: 10;
+    color: var(--alt-text-color);
+    font-weight: 400;
+}
+
+.footer-group {
+    display: flex;
+    column-gap: 1em;
+    height: 100%;
+}
+
+/*   Dark mode toggle switch   */
+
+/* The switch - the box around the slider */
+.switch {
+    position: relative;
+    bottom: 0.25em;
+    display: inline-block;
+    width: 46px;
+    height: 24px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: var(--blue);
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px var(--blue);
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(20px);
+    -ms-transform: translateX(20px);
+    transform: translateX(20px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}

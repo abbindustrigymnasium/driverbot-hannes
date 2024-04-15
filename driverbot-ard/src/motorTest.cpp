@@ -3,6 +3,11 @@
 #define motorPinRightDir 0   //D2
 #define motorPinRightSpeed 5    //D1
 
+int speed = 100;
+int dir = 0;
+int speedIncrement = 5;
+int maxSpeed = 250;
+
 void setup() {
   // put your setup code here, to run once:
   pinMode(motorPinRightDir, OUTPUT);
@@ -11,16 +16,34 @@ void setup() {
   Serial.begin(115200);
 }
 
+void setSpeed() {
+  // Speed up
+  if (speed < maxSpeed)
+  {
+    speed = speed + speedIncrement;
+  }
+
+  // Speed down when reached max speed
+  if (speed = maxSpeed)
+  {
+    if (speed != 0) {
+      speed = speed - speedIncrement;
+    }
+  }
+}
+
+void drive(int speed, int direction) {
+  digitalWrite(motorPinRightDir, direction);
+  analogWrite(motorPinRightSpeed, speed);
+}
+
 void loop() {
-  int speed = 1024;
-  int dir = 0;
+  setSpeed();
 
-  Serial.println("Test");
+  Serial.println("Speed (RPM): " + String(speed));
+  Serial.println("Direction: " + String(dir));
 
-  delay(2200);
-  digitalWrite(motorPinRightDir, dir);
-  analogWrite(motorPinRightSpeed, speed);
-  delay(2200);      
-  digitalWrite(motorPinRightDir, 1);
-  analogWrite(motorPinRightSpeed, speed);
+  drive(speed, dir);
+
+  delay(200);
 }
