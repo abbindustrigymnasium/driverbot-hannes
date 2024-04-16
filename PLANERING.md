@@ -8,7 +8,7 @@
 - Om möjligt, position? Visualisera driverbotens position relativt till startposition på webbsidan
 - Tid över? GSAP animationer
 
-### Struktur
+### Struktur (hittills)
 
 - Web
     - index.html
