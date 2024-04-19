@@ -4,10 +4,20 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Driverbot - Hannes</title>
+        <title>driverbot console</title>
+        <!-- Include Socket.IO library -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js" integrity="sha512-luMnTJZ7oEchNDZAtQhgjomP1eZefnl82ruTH/3Oj/Yu5qYtwL7+dVRccACS/Snp1lFXq188XFipHKYE75IaQQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
+        <div class="menu-overlay">
+            <img class="close-icon" src="./assets/close-icon.svg" alt="close menu icon">
+            <p class="menu-paragraph">Some useful links for this project</p>
+            <div class="menu-frame">
+                <a href="" class="menu-link link">Help</a>
+                <a href="https://github.com/abbindustrigymnasium/driverbot-hannes/blob/main/ROADMAP.md" target="_blank" class="menu-link link">Project Roadmap</a>
+            </div>
+        </div>
         <div class="toprow">
             <div>
                 <h1>driverbot</h1>
@@ -19,23 +29,49 @@
             </nav>
         </div>
         <main>
-        
+            <div class="connect-form">
+                <div>
+                    <div class="connect-form-info">
+                        <h2 class="connect-title">Connect</h2>
+                        <p class="form-alt-text">You will need to connect to the MQTT broker.</p>
+                    </div>
+                    <div class="connect-form-inputs">
+                        <div>
+                            <p class="input-description">Client ID:</p>
+                            <input type="text" name="clientId" id="clientId">
+                        </div>
+                        <div>
+                            <p class="input-description">Username:</p>
+                            <input type="text" name="username" id="username">
+                        </div>
+                        <div>
+                            <p class="input-description">Password:</p>
+                            <input type="password" name="password" id="password">
+                        </div>
+                        <!--<button type="button">Connect</button>-->
+                        <div class="form-button-wrapper">
+                            <button class="button" onclick="connect()"><span class="button-text">Connect</span><span class="button-text">To MQTT</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
         <footer>
             <div class="footer-group">
-                <p>Dark Mode</p>
+                <p>dark mode</p>
                 <label class="switch">
-                    <input type="checkbox">
+                    <input type="checkbox" id="darkModeToggle" onchange="switchTheme()">
                     <span class="slider round"></span>
                 </label>
             </div>
-            <div>
+            <div class="credit-notice">
                 <p>made by Hannes</p>
             </div>
             <div class="footer-group">
                 <a target="_blank" href="https://github.com/abbindustrigymnasium/driverbot-hannes.git" class="link-light">github</a>
+                <img class="github-mark" src="./assets/github-mark.svg" alt="GitHub mark">
                 <p>v 1.0</p>
-                <img src="./assets/hitachi-icon.svg" alt="Hitachi Icon">
+                <img class="hitachi-icon" src="./assets/hitachi-icon.svg" alt="Hitachi icon">
             </div>
         </footer>
     </body>
