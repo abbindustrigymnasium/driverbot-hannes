@@ -9,6 +9,7 @@
     --blue: #2b5f6d;
 }
 
+/*   Custom Font   */
 @font-face {
     font-family: 'Helvetica Neue';
     src: url(./font/HelveticaNeue-Medium.otf);
@@ -19,6 +20,24 @@
     font-family: 'Helvetica Neue';
     src: url(./font/HelveticaNeue-Heavy.otf);
     font-weight: 700;
+}
+
+/*   Basic CSS Reset   */
+
+p, h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+    color: unset;
+}
+
+/*   Global   */
+
+html {
+    scroll-behavior: smooth;
 }
 
 ::selection {
@@ -33,24 +52,10 @@ body {
     margin: 0;
 }
 
-/*   Reset   */
-
-p, h1, h2, h3, h4, h5, h6 {
-    margin: 0;
-    padding: 0;
-}
-
-a {
-    text-decoration: none;
-    color: unset;
-}
-
-/*   Global   */
-
 .link {
     position: relative;
     transition: letter-spacing 0.5s ease-in-out;
-  }
+}
   
 .link::after {
     content: '';
@@ -126,7 +131,7 @@ a {
     right: 4em;
     top: 4em;
     width: 22px;
-    transition: all 100ms ease-out;
+    transition: width 100ms ease-out, right 100ms ease-out, top 100ms ease-out;
     cursor: pointer;
 }
 
@@ -134,7 +139,7 @@ a {
     width: 26px;
     right: calc(4em - 2px);
     top: calc(4em - 2px);
-    filter: invert(34%) sepia(77%) saturate(1199%) hue-rotate(321deg) brightness(86%) contrast(82%);
+    /*The filter to change color is handled by the javascirpt instead: filter: invert(34%) sepia(77%) saturate(1199%) hue-rotate(321deg) brightness(86%) contrast(82%);*/
 }
 
 .menu-link {
@@ -151,6 +156,11 @@ a {
     margin-top: 1em;
     margin-inline: 2em;
     margin-bottom: 5em;
+}
+
+.leftside-toprow {
+    display: flex;
+    column-gap: 0.75em;
 }
 
 nav {
@@ -178,6 +188,26 @@ nav {
     font-weight: 700;
 }
 
+@keyframes logo-animation {
+    0% {
+        content: url(./assets/logo-frame1.svg);
+    }
+    33% {
+        content: url(./assets/logo-frame2.svg);
+    }
+    66% {
+        content: url(./assets/logo-frame3.svg);
+    }
+    100% {
+        content: url(./assets/logo-frame1.svg);
+    }
+}
+  
+.logo {
+    animation: logo-animation 5s infinite;
+    user-select: none;
+}
+
 h1 {
     margin: 0;
     font-size: 4rem;
@@ -185,6 +215,7 @@ h1 {
 }
 
 /*      Connect form      */
+
 .connect-form {
     display: flex;
     flex-direction: column;
@@ -195,7 +226,7 @@ h1 {
     margin-bottom: 2em;
 }
 
-.connect-title {
+h2 {
     font-size: 2rem;
     margin-bottom: 0.2em;
 }
@@ -302,6 +333,22 @@ input:focus {
     transition: all 900ms cubic-bezier(0.48, 0, 0.12, 1);
 }
 
+/*      Monitor Section      */
+
+.monitor-section {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+}
+
+.info-list {
+    margin-top: 1em;
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.25em;
+    color: var(--alt-text-color);
+}
+
 /*   Footer   */
 
 footer {
@@ -395,6 +442,12 @@ input:checked + .slider:before {
 }
 
 /*   Media   */
+
+@media only screen and (max-width: 740px) {
+    .logo {
+        display: none;
+    }
+}
 
 @media only screen and (max-width: 560px) {
     .credit-notice {
