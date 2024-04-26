@@ -17,7 +17,7 @@
 - Arduino
     - driverbot.cpp    All driverbot functions, connection between ESP8266 and MQTT broker
 
-**`webbsite (publisher)`** → **`webbinput`** → **`MQTT broker`** → **`ESP (subscriber)`** → **`driverbot`**
+**`website (publisher)`** → **`webinput`** → **`MQTT broker`** → **`ESP (subscriber)`** → **`driverbot`**
 
 ### Website
 
