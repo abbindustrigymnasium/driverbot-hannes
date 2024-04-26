@@ -6,8 +6,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>driverbot Dashboard</title>
         <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
-        <!-- Include Socket.IO library -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js" integrity="sha512-luMnTJZ7oEchNDZAtQhgjomP1eZefnl82ruTH/3Oj/Yu5qYtwL7+dVRccACS/Snp1lFXq188XFipHKYE75IaQQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <!--MQTT-->
+        <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
@@ -25,7 +25,7 @@
                     <img class="logo" src="./assets/logo-frame1.svg" alt="driverbot logo">
                     <h1>driverbot</h1>
                 </div>
-                <p class="driverbot-info">short description</p>
+                <p class="driverbot-info">A project to create a small-scale Lego-based vehicle.</p>
             </div>
             <nav>
                 <div class="menu-navtext link">menu</div>
@@ -61,16 +61,46 @@
             <section class="monitor-section">
                 <div>
                     <div>
-                        <h2>About your connection.</h2>
+                        <h2>Connection</h2>
                     </div>
                     <div class="info-list">
                         <p class="info-cluster">Cluster URL: </p>
                         <p class="info-port">Port: </p>
-                        <p class="info-protocol">Protocol: </p>
+                        <p class="info-connection-type">Protocol: </p>
                         <p class="info-username">Username:</p>
-                        <p class="info-password">Password: </p>
-                        <p class="info-time"><br>Connected for X time</p>
+                        <div class="info-password-row">
+                            <p class="info-password">Password: </p>
+                            <img class="password-icon" src="./assets/hide-icon.svg" alt="password hidden, show it">
+                        </div>
+                        <p class="info-time">Connected for </p>
                     </div>
+                </div>
+            </section>
+            <section class="drive-section">
+                <div class="wasd-wrapper">
+                    <div class="wasd-tooltips">
+                        <img class="tooltips-icon" src="./assets/tooltips-icon.svg" alt="tooltips">
+                    </div>
+                    <div class="tooltips-overlay">
+                        <p>Press or click...<br><br>W to drive forward<br>A to stear left<br>D to stear right<br>S to go backwards</p>
+                    </div>
+                    <div class="wasd-flex">
+                        <button class="w-button">W</button>
+                        <div>
+                            <button class="a-button">A</button>
+                            <button class="s-button">S</button>
+                            <button class="d-button">D</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="speed-wrapper">
+                    <div class="speed-slider-wrapper">
+                        <input type="range" min="0" max="300" value="0" class="speed-slider">
+                        <p class="speed-number">Speed: 0%</p>
+                    </div>
+                </div>
+                <div class="position-map-wrapper">
+                    <div class="position-map"></div>
                 </div>
             </section>
         </main>
