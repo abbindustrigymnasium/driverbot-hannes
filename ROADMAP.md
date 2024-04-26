@@ -11,13 +11,13 @@
 ### Structure (so far)
 
 - Web
-    - index.html
-    - main.js
-    - style.css
+    - index.html    Skelton
+    - main.js    Handling connection between web and MQTT broker, controls all web interactivity
+    - style.css    Styling
 - Arduino
-    - driverbot.cpp
+    - driverbot.cpp    All driverbot functions, connection between ESP8266 and MQTT broker
 
-**`webbsida (publisher)`** → **`webbinput`** → **`MQTT broker`** → **`ESP (subscriber)`** → **`driverbot`**
+**`webbsite (publisher)`** → **`webbinput`** → **`MQTT broker`** → **`ESP (subscriber)`** → **`driverbot`**
 
 ### Website
 
