@@ -6,14 +6,20 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>driverbot Dashboard</title>
         <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
-        <!--MQTT-->
+        <!-- MQTT -->
         <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+        <!-- GSAP -->
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
         <link rel="stylesheet" href="style.css">
+        <!-- Roboto Mono Font -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital@0;1&display=swap" rel="stylesheet">
     </head>
     <body>
         <div class="menu-overlay">
             <img class="close-icon" src="./assets/close-icon.svg" alt="close menu icon">
-            <p class="menu-paragraph">Some useful links for this project.</p>
+            <p class="menu-paragraph mono">Some useful links for this project.</p>
             <div class="menu-frame">
                 <a href="https://github.com/abbindustrigymnasium/driverbot-hannes/blob/main/README.md" target="_blank" class="menu-link link">Help</a>
                 <a href="https://github.com/abbindustrigymnasium/driverbot-hannes/blob/main/ROADMAP.md" target="_blank" class="menu-link link">Project Roadmap</a>
@@ -25,7 +31,7 @@
                     <img class="logo" src="./assets/logo-frame1.svg" alt="driverbot logo">
                     <h1>driverbot</h1>
                 </div>
-                <p class="driverbot-info">A project to create a small-scale Lego-based vehicle.</p>
+                <p class="driverbot-info mono">A project about a small-scale Lego-based vehicle.</p>
             </div>
             <nav>
                 <div class="menu-navtext link">menu</div>
@@ -37,19 +43,19 @@
                 <form action="javascript:connect()">
                     <div class="connect-form-info">
                         <h2>Connect</h2>
-                        <p class="form-alt-text">You will need to connect to the MQTT broker.<br>* are required.</p>
+                        <p class="form-alt-text mono">You will need to connect to the MQTT broker.<br>* are required.</p>
                     </div>
                     <div class="connect-form-inputs">
                         <div>
-                            <p class="input-description">Username *</p>
+                            <p class="input-description mono">Username *</p>
                             <input type="text" name="username" id="username" required>
                         </div>
                         <div>
-                            <p class="input-description">Password *</p>
+                            <p class="input-description mono">Password *</p>
                             <input type="password" name="password" id="password" required>
                         </div>
                         <div>
-                            <p class="input-description">Client ID</p>
+                            <p class="input-description mono">Client ID</p>
                             <input type="text" name="clientId" id="clientId">
                         </div>
                         <div class="form-button-wrapper">
@@ -64,15 +70,15 @@
                         <h2>Connection</h2>
                     </div>
                     <div class="info-list">
-                        <p class="info-cluster">Cluster URL: </p>
-                        <p class="info-port">Port: </p>
-                        <p class="info-connection-type">Protocol: </p>
-                        <p class="info-username">Username:</p>
+                        <p class="info-cluster mono">Cluster URL: </p>
+                        <p class="info-port mono">Port: </p>
+                        <p class="info-connection-type mono">Protocol: </p>
+                        <p class="info-username mono">Username:</p>
                         <div class="info-password-row">
-                            <p class="info-password">Password: </p>
-                            <img class="password-icon" src="./assets/hide-icon.svg" alt="password hidden, show it">
+                            <p class="info-password mono">Password: </p>
+                            <img class="password-icon" src="./assets/hide-icon.svg" alt="password is hidden, show it">
                         </div>
-                        <p class="info-time">Connected for </p>
+                        <p class="info-time mono">Connected for </p>
                     </div>
                 </div>
             </section>
@@ -82,7 +88,7 @@
                         <img class="tooltips-icon" src="./assets/tooltips-icon.svg" alt="tooltips">
                     </div>
                     <div class="tooltips-overlay">
-                        <p>Press or click...<br><br>W to drive forward<br>A to stear left<br>D to stear right<br>S to go backwards</p>
+                        <p class="mono">Press or click...<br><br>W to drive forward<br>A to stear left<br>D to stear right<br>S to go backwards</p>
                     </div>
                     <div class="wasd-flex">
                         <button class="w-button">W</button>
@@ -100,11 +106,26 @@
                     </div>
                 </div>
                 <div class="position-map-wrapper">
-                    <div class="position-map"></div>
+                    <div class="position-map">
+                        <div class="position-dot"></div>
+                        <div class="crosshair-wrapper">
+                            <div id="crosshair-horizontal" class="dotted-effect"></div>
+                            <div id="crosshair-vertical" class="dotted-effect"></div>
+                            <p class="position-crosshair-info">x: 0 y: 0</p>
+                        </div>
+                    </div>
+                    <div class="position-info">
+                        <h2>Position</h2>
+                        <div>
+                            <p class="position-info-text mono">x: 0 y: 0</p>
+                            <p class="position-info-description mono">This is an estimate of where the driverbot most likely is located relative to the start position. The cordinates show the distance from the start position (0, 0) in meters (m).</p>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
         <footer>
+            <img class="open-close-icon" src="./assets/open-close-arrow.svg" alt="open/close bottom bar">
             <div class="footer-group">
                 <p>dark mode</p>
                 <label class="switch">
@@ -118,8 +139,8 @@
             <div class="footer-group">
                 <a target="_blank" href="https://github.com/abbindustrigymnasium/driverbot-hannes.git" class="link-light">github</a>
                 <img class="github-mark" src="./assets/github-mark.svg" alt="GitHub mark">
-                <p>v 1.0</p>
-                <img class="hitachi-icon" src="./assets/hitachi-icon.svg" alt="Hitachi icon">
+                <p>v 0.1</p>
+                <a href="https://www.hitachigymnasiet.se/" target="_blank" class="hitachi-link"><img class="hitachi-icon" src="./assets/hitachi-icon.svg" alt="Hitachi icon"></a>
             </div>
         </footer>
     </body>

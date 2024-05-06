@@ -1,20 +1,25 @@
+// FOR LATER: Split this into different files
+
 //      Menu
 
 const menuHitbox = document.querySelector("nav");
 const menuOverlay = document.querySelector(".menu-overlay");
 const closeIcon = document.querySelector(".close-icon");
+const body = document.querySelector("body");
 
 //  Display menu when hitbox is clicked
 menuHitbox.onclick = function() {
     console.log("Opened menu");
 
     menuOverlay.style.display = "block";
+    body.style.overflow = "hidden";
 }
 
 closeIcon.onclick = function() {
     console.log("Closed menu");
 
     menuOverlay.style.display = "none";
+    body.style.overflow = "unset";
 }
 
 //      Dark mode
@@ -23,6 +28,10 @@ const darkModeToggle = document.getElementById("darkModeToggle");
 const cssRoot = document.querySelector(":root");
 const menuIcon = document.querySelector(".menu-icon");
 const tooltipsIcon = document.querySelector(".tooltips-icon");
+const logo = document.querySelector(".logo");
+const githubMark = document.querySelector(".github-mark");
+const passwordIcon = document.querySelector(".password-icon");
+const openCloseIcon = document.querySelector(".open-close-icon");
 
 // Defualt
 const hoverHandler = () => {
@@ -40,13 +49,22 @@ const mouseoutHandlerDarkMode = () => {
 closeIcon.addEventListener('mouseover', hoverHandler);
 closeIcon.addEventListener('mouseout', mouseoutHandlerLightMode);
 
+// Set dark mode to default
+darkModeToggle.checked = true;
+switchTheme();
+
 //  Switch between light and dark mode
 // Note: generated CSS filters using https://isotropic.co/tool/hex-color-to-css-filter/
 function switchTheme() {
     if (darkModeToggle.checked == true) {
         console.log("Switching to dark theme");
         cssRoot.style.setProperty("--bg-color", "#0F0F0F");
-        cssRoot.style.setProperty("--main-text-color", "#EDEDED");
+        cssRoot.style.setProperty("--alt-text-color", "#9E9C84");
+        cssRoot.style.setProperty("--main-text-color", "#FFFCE1");
+        cssRoot.style.setProperty("--grey", "#42403C");
+        cssRoot.style.setProperty("--highlight-grey", "#252422");
+
+        logo.classList.add("logo-2");
 
         // Remove close icon light mode color
         closeIcon.removeEventListener('mouseout', mouseoutHandlerLightMode);
@@ -54,13 +72,22 @@ function switchTheme() {
         // Add new one
         closeIcon.addEventListener('mouseout', mouseoutHandlerDarkMode);
 
-        menuIcon.style.filter = "invert(99%) sepia(1%) saturate(2039%) hue-rotate(37deg) brightness(119%) contrast(86%)";
-        closeIcon.style.filter = "invert(99%) sepia(1%) saturate(2039%) hue-rotate(37deg) brightness(119%) contrast(86%)";
-        tooltipsIcon.style.filter = "invert(99%) sepia(1%) saturate(2039%) hue-rotate(37deg) brightness(119%) contrast(86%)";
+        // Updated
+        openCloseIcon.src = "./assets/open-close-arrow2.svg";
+        menuIcon.style.filter = "invert(95%) sepia(29%) saturate(309%) hue-rotate(339deg) brightness(108%) contrast(104%)";
+        closeIcon.style.filter = "invert(95%) sepia(29%) saturate(309%) hue-rotate(339deg) brightness(108%) contrast(104%)";
+        tooltipsIcon.style.filter = "invert(95%) sepia(29%) saturate(309%) hue-rotate(339deg) brightness(108%) contrast(104%)";
+        githubMark.style.filter = "invert(67%) sepia(8%) saturate(503%) hue-rotate(18deg) brightness(92%) contrast(85%)";
+        passwordIcon.style.filter = "invert(66%) sepia(10%) saturate(540%) hue-rotate(18deg) brightness(90%) contrast(93%)";
     } else {
         console.log("Switching back to light theme");
         cssRoot.style.setProperty("--bg-color", "#EDEDED");
+        cssRoot.style.setProperty("--alt-text-color", "#9A9A9A");
         cssRoot.style.setProperty("--main-text-color", "#0F0F0F");
+        cssRoot.style.setProperty("--grey", "#b8b8b8");
+        cssRoot.style.setProperty("--highlight-grey", "#dfdfdf");
+
+        logo.classList.remove("logo-2");
 
         // Remove close icon dark mode color
         closeIcon.removeEventListener('mouseout', mouseoutHandlerDarkMode);
@@ -68,9 +95,12 @@ function switchTheme() {
         // Add new one
         closeIcon.addEventListener('mouseout', mouseoutHandlerLightMode);
 
+        openCloseIcon.src = "./assets/open-close-arrow.svg";
         menuIcon.style.filter = "unset";
         closeIcon.style.filter = "unset";
         tooltipsIcon.style.filter = "unset";
+        githubMark.style.filter = "invert(70%) sepia(7%) saturate(0%) hue-rotate(139deg) brightness(88%) contrast(84%)";
+        passwordIcon.style.filter = "unset";
     }
 }
 
@@ -90,8 +120,6 @@ const infoConnectionType = document.querySelector(".info-connection-type");
 const infoUsername = document.querySelector(".info-username");
 const infoPassword = document.querySelector(".info-password");
 const infoTime = document.querySelector(".info-time");
-
-const passwordIcon = document.querySelector(".password-icon");
 
 function hideConnectForm() {
     connectForm.style.display = "none";
@@ -125,7 +153,8 @@ function connect() {
     // Initialize the MQTT client
     var client = mqtt.connect(clusterURL, {
         username: username,
-        password: password
+        password: password,
+        clientId: clientID
     });
 
     //      Callbacks
@@ -182,6 +211,7 @@ function connect() {
     // When all done, hide form + show the other dashboard sections
     hideConnectForm();
     showDashboard();
+    startWASD();
 }
 
 // Hide/show password with the icon
@@ -192,12 +222,12 @@ passwordIcon.onclick = function() {
     if (hiddenPassword) {
         infoPassword.innerHTML = "Password: " + password;
         passwordIcon.src = "./assets/show-icon.svg";
-        passwordIcon.alt = "password visible, hide it"
+        passwordIcon.alt = "password is visible, hide it"
         hiddenPassword = false;
     } else {
         infoPassword.innerHTML = "Password: " + "*".repeat(password.length);
         passwordIcon.src = "./assets/hide-icon.svg";
-        passwordIcon.alt = "password hidden, show it"
+        passwordIcon.alt = "password is hidden, show it"
         hiddenPassword = true;
     }
 }
@@ -211,8 +241,6 @@ const wButton = document.querySelector(".w-button");
 const aButton = document.querySelector(".a-button");
 const sButton = document.querySelector(".s-button");
 const dButton = document.querySelector(".d-button");
-
-startWASD();
 
 function startWASD() {
     // Create an object to store the state of each key
@@ -270,43 +298,35 @@ function startWASD() {
 
     // Add event listeners for mouse down events on buttons
     wButton.addEventListener('mousedown', function() {
-        // Simulate 'w' key press
         handleKeyEvent({ key: 'w' });
     });
 
     aButton.addEventListener('mousedown', function() {
-        // Simulate 'a' key press
         handleKeyEvent({ key: 'a' });
     });
 
     sButton.addEventListener('mousedown', function() {
-        // Simulate 's' key press
         handleKeyEvent({ key: 's' });
     });
 
     dButton.addEventListener('mousedown', function() {
-        // Simulate 'd' key press
         handleKeyEvent({ key: 'd' });
     });
 
     // Add event listeners for mouse up events on buttons to revert back to default state
     wButton.addEventListener('mouseup', function() {
-        // Simulate 'w' key release
         handleKeyReleaseEvent({ key: 'w' });
     });
 
     aButton.addEventListener('mouseup', function() {
-        // Simulate 'a' key release
         handleKeyReleaseEvent({ key: 'a' });
     });
 
     sButton.addEventListener('mouseup', function() {
-        // Simulate 's' key release
         handleKeyReleaseEvent({ key: 's' });
     });
 
     dButton.addEventListener('mouseup', function() {
-        // Simulate 'd' key release
         handleKeyReleaseEvent({ key: 'd' });
     });
 }
@@ -319,4 +339,46 @@ const speedNumber = document.querySelector(".speed-number");
 speedSlider.oninput = function() {
     //speedNumber.innerHTML = "Speed: " + this.value;
     speedNumber.innerHTML = "Speed: " + Math.round((this.value/parseInt(speedSlider.getAttribute("max"))) * 100) + "%";
+}
+
+// Position map
+
+const positionMap = document.querySelector(".position-map")
+
+const crosshairHorizontal = document.getElementById("crosshair-horizontal");
+const crosshairVertical = document.getElementById("crosshair-vertical");
+const positionCrosshairInfo = document.querySelector(".position-crosshair-info");
+
+positionMap.addEventListener('mousemove', function(e) {
+    const boxRect = positionMap.getBoundingClientRect();
+    const mouseX = e.clientX - boxRect.left;
+    const mouseY = e.clientY - boxRect.top;
+
+    crosshairVertical.style.left = mouseX + 'px';
+    crosshairHorizontal.style.top = mouseY + 'px';
+
+    // Note: 200 is half the width of the position map
+    positionCrosshairInfo.innerHTML = "x: " + Math.round(mouseX - 200) + "y: " + Math.round((mouseY - 200)/-1);
+});
+
+// Open/close bottom bar
+
+const footerGroup = document.querySelectorAll(".footer-group");
+const creditNotice = document.querySelector(".credit-notice");
+
+openCloseIcon.onclick = function() {
+
+    if (creditNotice.style.display != "none") {
+        for (let i = 0; i < footerGroup.length; i++) {
+            footerGroup[i].style.display = "none";
+        }
+        creditNotice.style.display = "none";
+        openCloseIcon.classList.add("open-close-icon180");
+    } else {
+        for (let i = 0; i < footerGroup.length; i++) {
+            footerGroup[i].style.display = "flex";
+        }
+        creditNotice.style.display = "flex";
+        openCloseIcon.classList.remove("open-close-icon180");
+    }
 }
