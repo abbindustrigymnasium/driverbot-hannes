@@ -64,64 +64,83 @@
                     </div>
                 </form>
             </section>
-            <section class="monitor-section">
-                <div>
+            <div class="main-dashboard-wrapper">
+                <section class="monitor-section">
                     <div>
-                        <h2>Connection</h2>
-                    </div>
-                    <div class="info-list">
-                        <p class="info-cluster mono">Cluster URL: </p>
-                        <p class="info-port mono">Port: </p>
-                        <p class="info-connection-type mono">Protocol: </p>
-                        <p class="info-username mono">Username:</p>
-                        <div class="info-password-row">
-                            <p class="info-password mono">Password: </p>
-                            <img class="password-icon" src="./assets/hide-icon.svg" alt="password is hidden, show it">
+                        <div>
+                            <h2>Connection</h2>
                         </div>
-                        <p class="info-time mono">Connected for </p>
+                        <div class="info-list">
+                            <p class="info-cluster mono">Cluster URL: </p>
+                            <p class="info-port mono">Port: </p>
+                            <p class="info-connection-type mono">Protocol: </p>
+                            <p class="info-username mono">Username:</p>
+                            <div class="info-password-row">
+                                <p class="info-password mono">Password: </p>
+                                <img class="password-icon" src="./assets/hide-icon.svg" alt="password is hidden, show it">
+                            </div>
+                            <p class="info-time mono">Connected for </p>
+                        </div>
+                        <div class="disconnect-button-wrapper">
+                            <button class="button" onclick="disconnect()"><span class="button-text">Disconnect &#129148;</span><span class="button-text">From MQTT</span></button>
+                        </div>
+                    </div>
+                </section>
+                <div class="section-divider"></div>
+                <section class="drive-section">
+                    <div class="wasd-wrapper">
+                        <div class="wasd-tooltips">
+                            <img class="tooltips-icon" src="./assets/tooltips-icon.svg" alt="tooltips">
+                        </div>
+                        <div class="tooltips-overlay">
+                            <p class="mono">Press or click...<br><br>W to drive forward<br>A to stear left<br>D to stear right<br>S to go backwards</p>
+                        </div>
+                        <div class="wasd-flex">
+                            <button class="w-button">W</button>
+                            <div>
+                                <button class="a-button">A</button>
+                                <button class="s-button">S</button>
+                                <button class="d-button">D</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="speed-wrapper">
+                        <div class="speed-slider-wrapper">
+                            <input type="range" min="0" max="300" value="0" class="speed-slider">
+                            <p class="speed-number">Speed: 0%</p>
+                        </div>
+                    </div>
+                    <div class="position-map-wrapper">
+                        <div class="position-map">
+                            <div class="position-dot"></div>
+                            <div class="crosshair-wrapper">
+                                <div id="crosshair-horizontal" class="dotted-effect"></div>
+                                <div id="crosshair-vertical" class="dotted-effect"></div>
+                                <p class="position-crosshair-info">x: 0 y: 0</p>
+                            </div>
+                        </div>
+                        <div class="position-info">
+                            <h2>Position</h2>
+                            <div>
+                                <p class="position-info-text mono">x: 0 y: 0</p>
+                                <p class="position-info-description mono">This is an estimate of where the driverbot most likely is located relative to the start position. The cordinates show the distance from the start position (0, 0) in meters (m).</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="section-divider"></div>
+            <section class="ending-section">
+                <div class="learn-more-row">
+                    <h2>Feeling lost?</h2>
+                    <div class="learn-more-button-wrapper">
+                        <button class="button"><span class="button-text">Learn More &#129149;</span><span class="button-text">About driverbot</span></button>
                     </div>
                 </div>
             </section>
-            <section class="drive-section">
-                <div class="wasd-wrapper">
-                    <div class="wasd-tooltips">
-                        <img class="tooltips-icon" src="./assets/tooltips-icon.svg" alt="tooltips">
-                    </div>
-                    <div class="tooltips-overlay">
-                        <p class="mono">Press or click...<br><br>W to drive forward<br>A to stear left<br>D to stear right<br>S to go backwards</p>
-                    </div>
-                    <div class="wasd-flex">
-                        <button class="w-button">W</button>
-                        <div>
-                            <button class="a-button">A</button>
-                            <button class="s-button">S</button>
-                            <button class="d-button">D</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="speed-wrapper">
-                    <div class="speed-slider-wrapper">
-                        <input type="range" min="0" max="300" value="0" class="speed-slider">
-                        <p class="speed-number">Speed: 0%</p>
-                    </div>
-                </div>
-                <div class="position-map-wrapper">
-                    <div class="position-map">
-                        <div class="position-dot"></div>
-                        <div class="crosshair-wrapper">
-                            <div id="crosshair-horizontal" class="dotted-effect"></div>
-                            <div id="crosshair-vertical" class="dotted-effect"></div>
-                            <p class="position-crosshair-info">x: 0 y: 0</p>
-                        </div>
-                    </div>
-                    <div class="position-info">
-                        <h2>Position</h2>
-                        <div>
-                            <p class="position-info-text mono">x: 0 y: 0</p>
-                            <p class="position-info-description mono">This is an estimate of where the driverbot most likely is located relative to the start position. The cordinates show the distance from the start position (0, 0) in meters (m).</p>
-                        </div>
-                    </div>
-                </div>
+            <div class="section-divider"></div>
+            <section class="copyright-section">
+                <p class="copyright-notice mono">&#169; 2024, Hannes Gingby</p>
             </section>
         </main>
         <footer>
@@ -144,5 +163,6 @@
             </div>
         </footer>
     </body>
+    <!-- Javascript -->
     <script src="./main.js"></script>
 </html>

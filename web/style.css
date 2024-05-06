@@ -4,14 +4,14 @@
     --bg-color: #EDEDED;
     --main-text-color: #0F0F0F;
     --alt-text-color: #9A9A9A;
-    --red-light: #d41024;
+    --red-light: #d31528;
     --red-dark: #7e2a2a;
     --blue: #358196;
     --grey: #b8b8b8;
     --highlight-grey: #dfdfdf;
 }
 
-/*   Custom Font   */
+/*   Custom font   */
 @font-face {
     font-family: 'Helvetica Neue';
     src: url(./font/HelveticaNeue-Medium.otf);
@@ -24,7 +24,13 @@
     font-weight: 700;
 }
 
-/*   Basic CSS Reset   */
+@font-face {
+    font-family: 'Helvetica Neue';
+    src: url(./font/HelveticaNeue-Condensed.otf);
+    font-weight: 900;
+}
+
+/*   Basic CSS reset   */
 
 p, h1, h2, h3, h4, h5, h6 {
     margin: 0;
@@ -114,7 +120,7 @@ img {
     transform-origin: bottom left;
 }
 
-/*   Menu overlay   */
+/*   Menu Overlay   */
 
 .menu-overlay {
     position: absolute;
@@ -205,6 +211,7 @@ nav {
     font-weight: 700;
 }
 
+/* Animation of the logo */
 @keyframes logo-animation {
     0% {
         content: url(./assets/logo-frame1.svg);
@@ -219,19 +226,19 @@ nav {
         content: url(./assets/logo-frame1.svg);
     }
 }
-
+/* Animation for the colour-tinted logo */
 @keyframes logo-animation-2 {
     0% {
-        content: url(./assets/logo-frame1-2.svg);
+        content: url(./assets/logo-frame1-tinted.svg);
     }
     33% {
-        content: url(./assets/logo-frame2-2.svg);
+        content: url(./assets/logo-frame2-tinted.svg);
     }
     66% {
-        content: url(./assets/logo-frame3-2.svg);
+        content: url(./assets/logo-frame3-tinted.svg);
     }
     100% {
-        content: url(./assets/logo-frame1-2.svg);
+        content: url(./assets/logo-frame1-tinted.svg);
     }
 }
   
@@ -241,7 +248,7 @@ nav {
     margin-top: 0.125em;
 }
 
-.logo-2 {
+.logo-tinted {
     animation: logo-animation-2 5s infinite;
 }
 
@@ -251,12 +258,19 @@ h1 {
     font-weight: 700;
 }
 
+/*      Main content      */
+
+main {
+    margin-inline: 5em;
+}
+
 /*      Connect form      */
 
 .connect-form {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 5em;
 }
 
 .connect-form-info {
@@ -292,6 +306,7 @@ input {
     font-family: 'Helvetica Neue';
     font-size: 0.75rem;
     font-weight: 400;
+    width: 150px;
     outline: none;
 }
 
@@ -301,7 +316,7 @@ input:focus {
 
 .form-button-wrapper {
     margin-top: 2em;
-  }
+}
   
 .button {
     position: relative;
@@ -326,12 +341,14 @@ input:focus {
     font-weight: 700;
 }
 
+/* First side of the buttons text */
 .button span:first-child {
     position: relative;
     transition: color 0.5s cubic-bezier(0.48, 0, 0.12, 1);
     z-index: 10;
 }
 
+/*  Second side of the buttons text */
 .button span:last-child {
     display: block;
     position: absolute;
@@ -345,6 +362,7 @@ input:focus {
     height: 14px;
 }
 
+/* Second side of the button */
 .button:after {
     content: "";
     position: absolute;
@@ -359,21 +377,68 @@ input:focus {
     z-index: 50;
 }
 
+/* Animate the second side in */
 .button:hover:after {
     transform-origin: bottom center;
     transform: skewY(9.3deg) scaleY(2);
 }
 
+/* Animate the first side text out */
 .button:hover span:last-child {
     transform: translateX(-50%) translateY(-100%);
     opacity: 1;
     transition: all 900ms cubic-bezier(0.48, 0, 0.12, 1);
 }
 
+/*      Main dashboard       */
+
+.main-dashboard-wrapper {
+    display: none;
+}
+ 
 /*      Monitor Section      */
 
+/* Line between each section, like a viusal divider */
+.section-divider {
+    background-color: var(--alt-text-color);
+    position: relative;
+    opacity: 50%;
+    height: 2px;
+    margin-bottom: 5em;
+}
+
+/* Text under divider */
+.section-divider::after {
+    content: "new section";
+    color: var(--alt-text-color);
+    font-size: 0.6rem;
+    opacity: 100%;
+    position: absolute;
+    top: 0.25em;
+    left: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    animation: typing 5s steps(22, end) infinite;
+}
+
+/* 'Fake' typewriting animation */
+@keyframes typing {
+    0% {
+        width: 0;
+    }
+    50% {
+        width: 59px;
+    }
+    75% {
+        width: 0;
+    }
+    100% {
+        width: 0;
+    }
+}
+
 .monitor-section {
-    display: none;
+    display: flex;
     flex-direction: column;
     align-items: center;
     margin-bottom: 8em;
@@ -386,6 +451,11 @@ input:focus {
     flex-direction: column;
     row-gap: 0.25em;
     color: var(--alt-text-color);
+    margin-bottom: 2.5em;
+}
+
+.disconnect-button-wrapper {
+    width: 300px;
 }
 
 .info-password-row {
@@ -400,14 +470,14 @@ input:focus {
 /*      Drive Section      */
 
 .drive-section {
-    display: none;
+    display: flex;
     flex-direction: row;
-    padding-inline: 5em;
     column-gap: 5em;
     row-gap: 5em;
     flex-wrap: wrap;
     align-items: center;
     margin-bottom: 10em;
+    margin-inline: 6em;
 }
 
 .wasd-wrapper {
@@ -470,6 +540,7 @@ input:focus {
     opacity: 100%;
 }
 
+/* Enable pointer events only when hovering tooltips */
 .wasd-tooltips:hover + .tooltips-overlay {
     opacity: 100%;
     pointer-events: auto;
@@ -504,7 +575,8 @@ input:focus {
 .speed-slider:hover {
     background-color: var(--grey);
 }
-  
+
+/* Thumb of the speed slider */
 .speed-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
@@ -630,6 +702,38 @@ input:focus {
     margin-top: 1em;
 }
 
+/*   Ending section   */
+
+.ending-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 4.5em;
+}
+
+.learn-more-row {
+    display: flex;
+    column-gap: 2em;
+    margin-bottom: 2.5em;
+}
+
+.learn-more-button-wrapper {
+    width: 300px;
+}
+
+.copyright-notice {
+    font-size: 0.8rem;
+}
+
+/*   Copyright section   */
+
+.copyright-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10em;
+}
+
 /*   Footer   */
 
 footer {
@@ -677,7 +781,7 @@ footer {
     height: 100%;
 }
 
-/*   Dark mode toggle switch   */
+/*   Dark mode toggle switch, switch between the different themes   */
 
 /* The switch - the box around the slider */
 .switch {
@@ -760,7 +864,7 @@ input:checked + .slider:before {
     height: 0;
 }
 
-/*   Media   */
+/*   Media, responsiveness to different screen sizes   */
 
 @media only screen and (max-width: 740px) {
     .logo {

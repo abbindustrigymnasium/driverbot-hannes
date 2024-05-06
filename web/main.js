@@ -22,7 +22,7 @@ closeIcon.onclick = function() {
     body.style.overflow = "unset";
 }
 
-//      Dark mode
+//      Color themes
 
 const darkModeToggle = document.getElementById("darkModeToggle");
 const cssRoot = document.querySelector(":root");
@@ -33,25 +33,25 @@ const githubMark = document.querySelector(".github-mark");
 const passwordIcon = document.querySelector(".password-icon");
 const openCloseIcon = document.querySelector(".open-close-icon");
 
-// Defualt
+// Close icon color on different events
+
+// Hover
 const hoverHandler = () => {
     closeIcon.style.filter = "invert(34%) sepia(77%) saturate(1199%) hue-rotate(321deg) brightness(86%) contrast(82%)";
 };
 
+// Defualt state, light mode
 const mouseoutHandlerLightMode = () => {
     closeIcon.style.filter = "invert(0%) sepia(39%) saturate(5179%) hue-rotate(36deg) brightness(87%) contrast(88%)";
 };
 
+// Defualt state, dark mode
 const mouseoutHandlerDarkMode = () => {
     closeIcon.style.filter = "invert(99%) sepia(1%) saturate(2039%) hue-rotate(37deg) brightness(119%) contrast(86%)";
 };
 
 closeIcon.addEventListener('mouseover', hoverHandler);
 closeIcon.addEventListener('mouseout', mouseoutHandlerLightMode);
-
-// Set dark mode to default
-darkModeToggle.checked = true;
-switchTheme();
 
 //  Switch between light and dark mode
 // Note: generated CSS filters using https://isotropic.co/tool/hex-color-to-css-filter/
@@ -64,7 +64,7 @@ function switchTheme() {
         cssRoot.style.setProperty("--grey", "#42403C");
         cssRoot.style.setProperty("--highlight-grey", "#252422");
 
-        logo.classList.add("logo-2");
+        logo.classList.add("logo-tinted");
 
         // Remove close icon light mode color
         closeIcon.removeEventListener('mouseout', mouseoutHandlerLightMode);
@@ -72,8 +72,8 @@ function switchTheme() {
         // Add new one
         closeIcon.addEventListener('mouseout', mouseoutHandlerDarkMode);
 
-        // Updated
-        openCloseIcon.src = "./assets/open-close-arrow2.svg";
+        // Changing colours of icons
+        openCloseIcon.src = "./assets/open-close-arrow-tinted.svg";
         menuIcon.style.filter = "invert(95%) sepia(29%) saturate(309%) hue-rotate(339deg) brightness(108%) contrast(104%)";
         closeIcon.style.filter = "invert(95%) sepia(29%) saturate(309%) hue-rotate(339deg) brightness(108%) contrast(104%)";
         tooltipsIcon.style.filter = "invert(95%) sepia(29%) saturate(309%) hue-rotate(339deg) brightness(108%) contrast(104%)";
@@ -87,7 +87,7 @@ function switchTheme() {
         cssRoot.style.setProperty("--grey", "#b8b8b8");
         cssRoot.style.setProperty("--highlight-grey", "#dfdfdf");
 
-        logo.classList.remove("logo-2");
+        logo.classList.remove("logo-tinted");
 
         // Remove close icon dark mode color
         closeIcon.removeEventListener('mouseout', mouseoutHandlerDarkMode);
@@ -95,6 +95,7 @@ function switchTheme() {
         // Add new one
         closeIcon.addEventListener('mouseout', mouseoutHandlerLightMode);
 
+        // Changing colors of icons
         openCloseIcon.src = "./assets/open-close-arrow.svg";
         menuIcon.style.filter = "unset";
         closeIcon.style.filter = "unset";
@@ -104,11 +105,14 @@ function switchTheme() {
     }
 }
 
+// Set to dark mode at startup
+darkModeToggle.checked = true;
+switchTheme();
+
 //      MQTT connection
 
 const connectForm = document.querySelector(".connect-form");
-const monitorSection = document.querySelector(".monitor-section");
-const driveSection = document.querySelector(".drive-section");
+const mainDashboard = document.querySelector(".main-dashboard-wrapper");
 
 const clientIDInput = document.getElementById("clientId");
 const usernameInput = document.getElementById("username");
@@ -121,13 +125,22 @@ const infoUsername = document.querySelector(".info-username");
 const infoPassword = document.querySelector(".info-password");
 const infoTime = document.querySelector(".info-time");
 
+let connectionTimeoutId;
+
 function hideConnectForm() {
     connectForm.style.display = "none";
 }
 
+function showConnectForm() {
+    connectForm.style.display = "flex";
+}
+
+function hideDashboard() {
+    mainDashboard.style.display = "none";
+}
+
 function showDashboard() {
-    monitorSection.style.display = "flex";
-    driveSection.style.display = "flex";
+    mainDashboard.style.display = "block";
 }
 
 let clientID;
@@ -137,7 +150,12 @@ let password;
 // Initialize a mqtt variable globally
 console.log(mqtt);
 
+// Global client variable
+let client;
+
 function connect() {
+    console.log("Connecting...");
+
     clientID = clientIDInput.value.toString();
     username = usernameInput.value.toString();
     password = passwordInput.value.toString();
@@ -151,7 +169,7 @@ function connect() {
     const clusterURL = 'wss://24481123c0884e459cd76ccc6ca6d326.s1.eu.hivemq.cloud:8884/mqtt';
 
     // Initialize the MQTT client
-    var client = mqtt.connect(clusterURL, {
+    client = mqtt.connect(clusterURL, {
         username: username,
         password: password,
         clientId: clientID
@@ -160,7 +178,7 @@ function connect() {
     //      Callbacks
 
     client.on('connect', function () {
-        console.log('Connected');
+        console.log('Connected to the broker.');
         connectionTime = new Date();
         updateConnectionTime();
     });
@@ -178,18 +196,18 @@ function connect() {
 
     // Update connection time every second
     function updateConnectionTime() {
-        var now = new Date();
-        var elapsedTime = now - connectionTime;
+        let now = new Date();
+        let elapsedTime = now - connectionTime;
         // Display connection time
         infoTime.innerHTML = "Connected for " + formatTime(elapsedTime);
-        setTimeout(updateConnectionTime, 1000);
+        connectionTimeoutId = setTimeout(updateConnectionTime, 1000);
     }
 
     // Format time as hours:minutes:seconds
     function formatTime(time) {
-        var hours = Math.floor(time / 3600000);
-        var minutes = Math.floor((time % 3600000) / 60000);
-        var seconds = Math.floor((time % 60000) / 1000);
+        let hours = Math.floor(time / 3600000);
+        let minutes = Math.floor((time % 3600000) / 60000);
+        let seconds = Math.floor((time % 60000) / 1000);
         return pad(hours) + ":" + pad(minutes) + ":" + pad(seconds);
     }
 
@@ -211,7 +229,26 @@ function connect() {
     // When all done, hide form + show the other dashboard sections
     hideConnectForm();
     showDashboard();
+
+    // Start listening for WASD key presses
     startWASD();
+}
+
+// Disconnect from the broker
+function disconnect() {
+    console.log("Disconnecting...");
+
+    client.end();
+
+    // Log when disconnected
+    client.on('close', function() {
+        console.log("Disconnected from the broker.");
+    });
+
+    // When all done, show connect form again + reset connection time
+    clearTimeout(connectionTimeoutId);
+    showConnectForm();
+    hideDashboard();
 }
 
 // Hide/show password with the icon
@@ -232,7 +269,7 @@ passwordIcon.onclick = function() {
     }
 }
 
-//      Driving
+//      Driving controls
 
 // Create an object to store the state of each key
 var keyPressed = {};
@@ -367,7 +404,6 @@ const footerGroup = document.querySelectorAll(".footer-group");
 const creditNotice = document.querySelector(".credit-notice");
 
 openCloseIcon.onclick = function() {
-
     if (creditNotice.style.display != "none") {
         for (let i = 0; i < footerGroup.length; i++) {
             footerGroup[i].style.display = "none";
