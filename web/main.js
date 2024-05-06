@@ -272,7 +272,7 @@ passwordIcon.onclick = function() {
 //      Driving controls
 
 // Create an object to store the state of each key
-var keyPressed = {};
+let keyPressed = {};
 
 const wButton = document.querySelector(".w-button");
 const aButton = document.querySelector(".a-button");
@@ -280,9 +280,6 @@ const sButton = document.querySelector(".s-button");
 const dButton = document.querySelector(".d-button");
 
 function startWASD() {
-    // Create an object to store the state of each key
-    var keyPressed = {};
-
     // Get references to the button elements
 
     // Function to handle key events
