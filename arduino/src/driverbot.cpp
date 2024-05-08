@@ -100,10 +100,10 @@ void reconnect() {
             Serial.println("connected");
 
             // Once connected, publish an announcement…
-            client->publish("testTopic", "hello world");
+            client->publish("userData", "test from ESP");
             
             // … and resubscribe
-            client->subscribe("testTopic");
+            client->subscribe("userData");
         } else {
             Serial.print("failed, rc = ");
             Serial.print(client->state());
@@ -158,6 +158,6 @@ void loop() {
         snprintf (msg, MSG_BUFFER_SIZE, "hello world #%ld", value);
         Serial.print("Publish message: ");
         Serial.println(msg);
-        client->publish("testTopic", msg);
+        client->publish("userData", msg);
     }
 }

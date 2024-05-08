@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>About driverbot</title>
+        <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
+        <!-- GSAP -->
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+        <link rel="stylesheet" href="style.css">
+        <!-- Roboto Mono Font -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital@0;1&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <div class="menu-overlay">
+            <img class="close-icon" src="./assets/close-icon.svg" alt="close menu icon">
+            <p class="menu-paragraph mono">Some useful links for this project.</p>
+            <div class="menu-frame">
+                <a href="./index.html" class="menu-link link">Dashboard</a>
+                <a href="https://github.com/abbindustrigymnasium/driverbot-hannes/blob/main/README.md" target="_blank" class="menu-link link">Help</a>
+                <a href="https://github.com/abbindustrigymnasium/driverbot-hannes/blob/main/ROADMAP.md" target="_blank" class="menu-link link">Project Roadmap</a>
+            </div>
+        </div>
+        <div class="toprow">
+            <div>
+                <div class="leftside-toprow">
+                    <img class="logo" src="./assets/logo-frame1.svg" alt="driverbot logo">
+                    <h1>driverbot</h1>
+                </div>
+                <p class="driverbot-info mono">A project about a small-scale Lego-based vehicle.</p>
+            </div>
+            <nav>
+                <div class="menu-navtext link">menu</div>
+                <img class="menu-icon" src="./assets/menu-icon.svg" alt="hamburger menu">
+            </nav>
+        </div>
+        <main>
+            <section class="about">
+                <h1 class="about-title">About driverbot</h1>
+                <article>
+                    <p class="mono">The driverbot project started in March 2024. It's a school project aimed to create a small-scale Lego-based car. The technologies used in the project are MQTT, ESP8266 microcontroller, motors, servos, cad-modelled parts among other things.<br><br></p>
+                    <p class="mono">The requirments were as follows, the car should be:</p>
+                    <ul class="mono">
+                        <li>Able to steere forward, left, right and backwards.</li>
+                        <li>Controllable via a website.</li>
+                        <li>At max 15x15x15 centimeters in size.</li>
+                    </ul>
+                    <p class="mono">If you want to take a look at the code for this proejct, head to my GitHub repository <a href="https://github.com/abbindustrigymnasium/driverbot-hannes/tree/main" target="_blank" class="link"><b>HERE</b></a>.</p>
+                </article>
+            </section>
+            <div class="section-divider"></div>
+            <section class="copyright-section">
+                <p class="copyright-notice mono">&#169; 2024, Hannes Gingby</p>
+            </section>
+        </main>
+        <footer>
+            <img class="open-close-icon" src="./assets/open-close-arrow.svg" alt="open/close bottom bar">
+            <div class="footer-group">
+                <p>dark mode</p>
+                <label class="switch">
+                    <input type="checkbox" id="darkModeToggle" onchange="switchTheme()">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="credit-notice">
+                <p>by Hannes</p>
+            </div>
+            <div class="footer-group">
+                <a target="_blank" href="https://github.com/abbindustrigymnasium/driverbot-hannes.git" class="link-light">github</a>
+                <img class="github-mark" src="./assets/github-mark.svg" alt="GitHub mark">
+                <p>v 0.1</p>
+                <a href="https://www.hitachigymnasiet.se/" target="_blank" class="hitachi-link"><img class="hitachi-icon" src="./assets/hitachi-icon.svg" alt="Hitachi icon"></a>
+            </div>
+        </footer>
+    </body>
+    <!-- Connect JavaScript -->
+    <script src="./main.js"></script>
+</html>

@@ -1,4 +1,4 @@
-// FOR LATER: Split this into different files
+//      HANDLING EVENTS ON THE PAGE
 
 //      Menu
 
@@ -76,9 +76,14 @@ function switchTheme() {
         openCloseIcon.src = "./assets/open-close-arrow-tinted.svg";
         menuIcon.style.filter = "invert(95%) sepia(29%) saturate(309%) hue-rotate(339deg) brightness(108%) contrast(104%)";
         closeIcon.style.filter = "invert(95%) sepia(29%) saturate(309%) hue-rotate(339deg) brightness(108%) contrast(104%)";
-        tooltipsIcon.style.filter = "invert(95%) sepia(29%) saturate(309%) hue-rotate(339deg) brightness(108%) contrast(104%)";
         githubMark.style.filter = "invert(67%) sepia(8%) saturate(503%) hue-rotate(18deg) brightness(92%) contrast(85%)";
-        passwordIcon.style.filter = "invert(66%) sepia(10%) saturate(540%) hue-rotate(18deg) brightness(90%) contrast(93%)";
+        // Null check becasue this element is not in the about page
+        if (tooltipsIcon) {
+            tooltipsIcon.style.filter = "invert(95%) sepia(29%) saturate(309%) hue-rotate(339deg) brightness(108%) contrast(104%)";
+        }
+        if (passwordIcon) {
+            passwordIcon.style.filter = "invert(66%) sepia(10%) saturate(540%) hue-rotate(18deg) brightness(90%) contrast(93%)";
+        }
     } else {
         console.log("Switching back to light theme");
         cssRoot.style.setProperty("--bg-color", "#EDEDED");
@@ -99,9 +104,14 @@ function switchTheme() {
         openCloseIcon.src = "./assets/open-close-arrow.svg";
         menuIcon.style.filter = "unset";
         closeIcon.style.filter = "unset";
-        tooltipsIcon.style.filter = "unset";
         githubMark.style.filter = "invert(70%) sepia(7%) saturate(0%) hue-rotate(139deg) brightness(88%) contrast(84%)";
-        passwordIcon.style.filter = "unset";
+        // Null check becasue this element is not in the about page
+        if (tooltipsIcon) {
+            tooltipsIcon.style.filter = "unset";
+        }
+        if (passwordIcon) {
+            passwordIcon.style.filter = "unset";   
+        }
     }
 }
 
@@ -109,164 +119,25 @@ function switchTheme() {
 darkModeToggle.checked = true;
 switchTheme();
 
-//      MQTT connection
-
-const connectForm = document.querySelector(".connect-form");
-const mainDashboard = document.querySelector(".main-dashboard-wrapper");
-
-const clientIDInput = document.getElementById("clientId");
-const usernameInput = document.getElementById("username");
-const passwordInput = document.getElementById("password");
-
-const infoCluster = document.querySelector(".info-cluster");
-const infoPort = document.querySelector(".info-port");
-const infoConnectionType = document.querySelector(".info-connection-type");
-const infoUsername = document.querySelector(".info-username");
-const infoPassword = document.querySelector(".info-password");
-const infoTime = document.querySelector(".info-time");
-
-let connectionTimeoutId;
-
-function hideConnectForm() {
-    connectForm.style.display = "none";
-}
-
-function showConnectForm() {
-    connectForm.style.display = "flex";
-}
-
-function hideDashboard() {
-    mainDashboard.style.display = "none";
-}
-
-function showDashboard() {
-    mainDashboard.style.display = "block";
-}
-
-let clientID;
-let username;
-let password;
-
-// Initialize a mqtt variable globally
-console.log(mqtt);
-
-// Global client variable
-let client;
-
-function connect() {
-    console.log("Connecting...");
-
-    clientID = clientIDInput.value.toString();
-    username = usernameInput.value.toString();
-    password = passwordInput.value.toString();
-
-    clientIDInput.value = "";
-    usernameInput.value = "";
-    passwordInput.value = "";
-
-    //      MQTT
-
-    const clusterURL = 'wss://24481123c0884e459cd76ccc6ca6d326.s1.eu.hivemq.cloud:8884/mqtt';
-
-    // Initialize the MQTT client
-    client = mqtt.connect(clusterURL, {
-        username: username,
-        password: password,
-        clientId: clientID
-    });
-
-    //      Callbacks
-
-    client.on('connect', function () {
-        console.log('Connected to the broker.');
-        connectionTime = new Date();
-        updateConnectionTime();
-    });
-
-    client.on('error', function (error) {
-        console.log(error);
-    });
-
-    client.on('message', function (topic, message) {
-        // Called each time a message is received
-        console.log('Received message:', topic, message.toString());
-    });
-
-    //      Connection time
-
-    // Update connection time every second
-    function updateConnectionTime() {
-        let now = new Date();
-        let elapsedTime = now - connectionTime;
-        // Display connection time
-        infoTime.innerHTML = "Connected for " + formatTime(elapsedTime);
-        connectionTimeoutId = setTimeout(updateConnectionTime, 1000);
-    }
-
-    // Format time as hours:minutes:seconds
-    function formatTime(time) {
-        let hours = Math.floor(time / 3600000);
-        let minutes = Math.floor((time % 3600000) / 60000);
-        let seconds = Math.floor((time % 60000) / 1000);
-        return pad(hours) + ":" + pad(minutes) + ":" + pad(seconds);
-    }
-
-    // Add leading zero if single digit
-    function pad(num) {
-        return (num < 10 ? '0' : '') + num;
-    }
-
-    client.subscribe('testTopic');
-    client.publish('testTopic', 'Hello');
-
-    // Show connection info
-    infoCluster.innerHTML = "Cluster URL: " + clusterURL;
-    infoPort.innerHTML = "Port: 8884";
-    infoConnectionType.innerHTML = "Connection Type: WSS (WebSocket Secure)";
-    infoUsername.innerHTML = "Username: " + username;
-    infoPassword.innerHTML = "Password: " + "*".repeat(password.length);
-
-    // When all done, hide form + show the other dashboard sections
-    hideConnectForm();
-    showDashboard();
-
-    // Start listening for WASD key presses
-    startWASD();
-}
-
-// Disconnect from the broker
-function disconnect() {
-    console.log("Disconnecting...");
-
-    client.end();
-
-    // Log when disconnected
-    client.on('close', function() {
-        console.log("Disconnected from the broker.");
-    });
-
-    // When all done, show connect form again + reset connection time
-    clearTimeout(connectionTimeoutId);
-    showConnectForm();
-    hideDashboard();
-}
-
-// Hide/show password with the icon
+//      Hide/show password with the icon
 
 let hiddenPassword = true;
 
-passwordIcon.onclick = function() {
-    if (hiddenPassword) {
-        infoPassword.innerHTML = "Password: " + password;
-        passwordIcon.src = "./assets/show-icon.svg";
-        passwordIcon.alt = "password is visible, hide it"
-        hiddenPassword = false;
-    } else {
-        infoPassword.innerHTML = "Password: " + "*".repeat(password.length);
-        passwordIcon.src = "./assets/hide-icon.svg";
-        passwordIcon.alt = "password is hidden, show it"
-        hiddenPassword = true;
-    }
+// Null check becasue this element is not in the about page
+if (passwordIcon) {
+    passwordIcon.onclick = function() {
+        if (hiddenPassword) {
+            infoPassword.innerHTML = "Password: " + password;
+            passwordIcon.src = "./assets/show-icon.svg";
+            passwordIcon.alt = "password is visible, hide it"
+            hiddenPassword = false;
+        } else {
+            infoPassword.innerHTML = "Password: " + "*".repeat(password.length);
+            passwordIcon.src = "./assets/hide-icon.svg";
+            passwordIcon.alt = "password is hidden, show it"
+            hiddenPassword = true;
+        }
+    }    
 }
 
 //      Driving controls
@@ -279,103 +150,147 @@ const aButton = document.querySelector(".a-button");
 const sButton = document.querySelector(".s-button");
 const dButton = document.querySelector(".d-button");
 
-function startWASD() {
-    // Get references to the button elements
+// Function to handle key events
+function handleKeyEvent(event) {
+    // Check if the key is not already pressed
+    if (!keyPressed[event.key]) {
+        // Set the flag to true for the pressed key
+        keyPressed[event.key] = true;
 
-    // Function to handle key events
-    function handleKeyEvent(event) {
-        // Check if the key is not already pressed
-        if (!keyPressed[event.key]) {
-            // Set the flag to true for the pressed key
-            keyPressed[event.key] = true;
-
-            // Check for WASD
-            if (event.key === 'w') {
-                console.log("'w' pressed");
-                wButton.style.backgroundColor = "var(--alt-text-color)";
-            } else if (event.key === 'a') {
-                console.log("'a' pressed");
-                aButton.style.backgroundColor = "var(--alt-text-color)";
-            } else if (event.key === 's') {
-                console.log("'s' pressed");
-                sButton.style.backgroundColor = "var(--alt-text-color)";
-            } else if (event.key === 'd') {
-                console.log("'d' pressed");
-                dButton.style.backgroundColor = "var(--alt-text-color)";
-            }
-        }
-    }
-
-    // Function to handle key release events
-    function handleKeyReleaseEvent(event) {
-        // Reset the flag when the key is released
-        keyPressed[event.key] = false;
-        
+        // Check for WASD press
         if (event.key === 'w') {
-            console.log("'" + event.key + "' released");
-            wButton.style.backgroundColor = "var(--main-text-color)";
+            userData.forward = 1;
+            wButton.style.backgroundColor = "var(--alt-text-color)";
         } else if (event.key === 'a') {
-            console.log("'" + event.key + "' released");
-            aButton.style.backgroundColor = "var(--main-text-color)";
+            userData.left = 1;
+            aButton.style.backgroundColor = "var(--alt-text-color)";
         } else if (event.key === 's') {
-            console.log("'" + event.key + "' released");
-            sButton.style.backgroundColor = "var(--main-text-color)";
+            userData.backwards = 1;
+            sButton.style.backgroundColor = "var(--alt-text-color)";
         } else if (event.key === 'd') {
-            console.log("'" + event.key + "' released");
-            dButton.style.backgroundColor = "var(--main-text-color)";
+            userData.right = 1;
+            dButton.style.backgroundColor = "var(--alt-text-color)";
         }
+
+        sendData();
+    }
+}
+
+// Function to handle key release events
+function handleKeyReleaseEvent(event) {
+    // Reset the flag when the key is released
+    keyPressed[event.key] = false;
+    
+    // Check for WASD release
+    if (event.key === 'w') {
+        userData.forward = 0;
+        wButton.style.backgroundColor = "var(--main-text-color)";
+    } else if (event.key === 'a') {
+        userData.left = 0;
+        aButton.style.backgroundColor = "var(--main-text-color)";
+    } else if (event.key === 's') {
+        userData.backwards = 0;
+        sButton.style.backgroundColor = "var(--main-text-color)";
+    } else if (event.key === 'd') {
+        userData.right = 0;
+        dButton.style.backgroundColor = "var(--main-text-color)";
     }
 
+    sendData();
+}
+
+//      Simulate keypresses for mouseclicks
+
+function handleWEvent() {
+    handleKeyEvent({ key: 'w' });
+}
+
+function handleWReleaseEvent() {
+    handleKeyReleaseEvent({ key: 'w' });
+}
+
+function handleAEvent() {
+    handleKeyEvent({ key: 'a' });
+}
+
+function handleAReleaseEvent() {
+    handleKeyReleaseEvent({ key: 'a' });
+}
+
+function handleSEvent() {
+    handleKeyEvent({ key: 's' });
+}
+
+function handleSReleaseEvent() {
+    handleKeyReleaseEvent({ key: 's' });
+}
+
+function handleDEvent() {
+    handleKeyEvent({ key: 'd' });
+}
+
+function handleDReleaseEvent() {
+    handleKeyReleaseEvent({ key: 'd' });
+}
+
+// Listen and handle WASD events
+function startWASD() {
     // Add event listeners for keydown and keyup events
     document.addEventListener('keydown', handleKeyEvent);
     document.addEventListener('keyup', handleKeyReleaseEvent);
 
     // Add event listeners for mouse down events on buttons
-    wButton.addEventListener('mousedown', function() {
-        handleKeyEvent({ key: 'w' });
-    });
+    wButton.addEventListener('mousedown', handleWEvent);
+    aButton.addEventListener('mousedown', handleAEvent);
+    sButton.addEventListener('mousedown', handleSEvent);
+    dButton.addEventListener('mousedown', handleDEvent);
 
-    aButton.addEventListener('mousedown', function() {
-        handleKeyEvent({ key: 'a' });
-    });
-
-    sButton.addEventListener('mousedown', function() {
-        handleKeyEvent({ key: 's' });
-    });
-
-    dButton.addEventListener('mousedown', function() {
-        handleKeyEvent({ key: 'd' });
-    });
-
-    // Add event listeners for mouse up events on buttons to revert back to default state
-    wButton.addEventListener('mouseup', function() {
-        handleKeyReleaseEvent({ key: 'w' });
-    });
-
-    aButton.addEventListener('mouseup', function() {
-        handleKeyReleaseEvent({ key: 'a' });
-    });
-
-    sButton.addEventListener('mouseup', function() {
-        handleKeyReleaseEvent({ key: 's' });
-    });
-
-    dButton.addEventListener('mouseup', function() {
-        handleKeyReleaseEvent({ key: 'd' });
-    });
+    // Add event listeners for mouse up events to revert back to default state
+    wButton.addEventListener('mouseup', handleWReleaseEvent);
+    aButton.addEventListener('mouseup', handleAReleaseEvent);
+    sButton.addEventListener('mouseup', handleSReleaseEvent);
+    dButton.addEventListener('mouseup', handleDReleaseEvent);
 }
 
-// Speed control
+// Remove WASD listeners
+function removeWASD() {
+    // Remove event listeners for keydown and keyup events
+    document.removeEventListener('keydown', handleKeyEvent);
+    document.removeEventListener('keyup', handleKeyReleaseEvent);
+
+    // Remove event listeners for mouse down events on buttons
+    wButton.removeEventListener('mousedown', handleWEvent);
+    aButton.removeEventListener('mousedown', handleAEvent);
+    sButton.removeEventListener('mousedown', handleSEvent);
+    dButton.removeEventListener('mousedown', handleDEvent);
+
+    // Remove event listeners for mouse up events to revert back to default state
+    wButton.removeEventListener('mouseup', handleWReleaseEvent);
+    aButton.removeEventListener('mouseup', handleAReleaseEvent);
+    sButton.removeEventListener('mouseup', handleSReleaseEvent);
+    dButton.removeEventListener('mouseup', handleDReleaseEvent);
+}
+
+//      Speed control
 
 const speedSlider = document.querySelector(".speed-slider");
 const speedNumber = document.querySelector(".speed-number");
+let speedData;
 
-speedSlider.oninput = function() {
-    //speedNumber.innerHTML = "Speed: " + this.value;
-    speedNumber.innerHTML = "Speed: " + Math.round((this.value/parseInt(speedSlider.getAttribute("max"))) * 100) + "%";
+// Null check becasue this element is not in the about page
+if (speedSlider) {
+    speedSlider.oninput = function() {
+        speedData = Math.round((this.value/parseInt(speedSlider.getAttribute("max"))) * 100);
+        speedNumber.innerHTML = "Speed: " + speedData + "%";
+        
+        // Update speed value in user data set
+        userData.speed = speedData;
+    
+        sendData();
+    }
 }
 
-// Position map
+//      Position map
 
 const positionMap = document.querySelector(".position-map")
 
@@ -383,19 +298,22 @@ const crosshairHorizontal = document.getElementById("crosshair-horizontal");
 const crosshairVertical = document.getElementById("crosshair-vertical");
 const positionCrosshairInfo = document.querySelector(".position-crosshair-info");
 
-positionMap.addEventListener('mousemove', function(e) {
-    const boxRect = positionMap.getBoundingClientRect();
-    const mouseX = e.clientX - boxRect.left;
-    const mouseY = e.clientY - boxRect.top;
+// Null check becasue this element is not in the about page
+if (positionMap) {
+    positionMap.addEventListener('mousemove', function(e) {
+        const boxRect = positionMap.getBoundingClientRect();
+        const mouseX = e.clientX - boxRect.left;
+        const mouseY = e.clientY - boxRect.top;
+    
+        crosshairVertical.style.left = mouseX + 'px';
+        crosshairHorizontal.style.top = mouseY + 'px';
+    
+        // Note: 200 is half the width of the position map
+        positionCrosshairInfo.innerHTML = "x: " + Math.round(mouseX - 200) + "y: " + Math.round((mouseY - 200)/-1);
+    });
+}
 
-    crosshairVertical.style.left = mouseX + 'px';
-    crosshairHorizontal.style.top = mouseY + 'px';
-
-    // Note: 200 is half the width of the position map
-    positionCrosshairInfo.innerHTML = "x: " + Math.round(mouseX - 200) + "y: " + Math.round((mouseY - 200)/-1);
-});
-
-// Open/close bottom bar
+//      Open/close bottom bar
 
 const footerGroup = document.querySelectorAll(".footer-group");
 const creditNotice = document.querySelector(".credit-notice");

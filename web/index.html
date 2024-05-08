@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -21,6 +20,7 @@
             <img class="close-icon" src="./assets/close-icon.svg" alt="close menu icon">
             <p class="menu-paragraph mono">Some useful links for this project.</p>
             <div class="menu-frame">
+                <a href="./about.html" class="menu-link link">About</a>
                 <a href="https://github.com/abbindustrigymnasium/driverbot-hannes/blob/main/README.md" target="_blank" class="menu-link link">Help</a>
                 <a href="https://github.com/abbindustrigymnasium/driverbot-hannes/blob/main/ROADMAP.md" target="_blank" class="menu-link link">Project Roadmap</a>
             </div>
@@ -106,7 +106,7 @@
                     </div>
                     <div class="speed-wrapper">
                         <div class="speed-slider-wrapper">
-                            <input type="range" min="0" max="300" value="0" class="speed-slider">
+                            <input type="range" min="0" max="300" value="0" step="30" class="speed-slider">
                             <p class="speed-number">Speed: 0%</p>
                         </div>
                     </div>
@@ -123,7 +123,7 @@
                             <h2>Position</h2>
                             <div>
                                 <p class="position-info-text mono">x: 0 y: 0</p>
-                                <p class="position-info-description mono">This is an estimate of where the driverbot most likely is located relative to the start position. The cordinates show the distance from the start position (0, 0) in meters (m).</p>
+                                <p class="position-info-description mono">This is an estimate of where the driverbot most likely is located relative to the start position. The cordinates show the distance from the start position (0, 0). 10 cordinate points represant 1 meter (m).</p>
                             </div>
                         </div>
                     </div>
@@ -134,7 +134,7 @@
                 <div class="learn-more-row">
                     <h2>Feeling lost?</h2>
                     <div class="learn-more-button-wrapper">
-                        <button class="button"><span class="button-text">Learn More &#129149;</span><span class="button-text">About driverbot</span></button>
+                        <a href="./about.html" target="_blank"><button class="button"><span class="button-text">Learn More &#129149;</span><span class="button-text">About driverbot</span></button></a>
                     </div>
                 </div>
             </section>
@@ -163,6 +163,7 @@
             </div>
         </footer>
     </body>
-    <!-- Javascript -->
+    <!-- Connect JavaScript -->
     <script src="./main.js"></script>
+    <script src="./mqtt.js"></script>
 </html>

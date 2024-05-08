@@ -1,3 +1,5 @@
+/*   STYLING FOR THE PAGE   */
+
 /*   Theme   */
 
 :root {
@@ -11,7 +13,7 @@
     --highlight-grey: #dfdfdf;
 }
 
-/*   Custom font   */
+/*   Custom font, Helvetica Neue   */
 @font-face {
     font-family: 'Helvetica Neue';
     src: url(./font/HelveticaNeue-Medium.otf);
@@ -864,6 +866,26 @@ input:checked + .slider:before {
     height: 0;
 }
 
+/*   Styling for the about page   */
+
+.about {
+    padding-top: 1em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.about-title {
+    font-size: 3rem;
+    text-wrap: nowrap;
+    width: min-content;
+}
+
+article {
+    margin-top: 2.5em;
+    margin-bottom: 9.5em;
+}
+
 /*   Media, responsiveness to different screen sizes   */
 
 @media only screen and (max-width: 740px) {
@@ -899,6 +921,10 @@ input:checked + .slider:before {
 
     .tooltips-overlay {
         right: 0;
+    }
+
+    .about-title {
+        font-size: 2.5rem;
     }
 }
 
