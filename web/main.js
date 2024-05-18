@@ -1,4 +1,4 @@
-//      HANDLING EVENTS ON THE PAGE
+//      THIS FILE IS MAINLY HANDLING EVENTS ON THE PAGE
 
 //      Menu
 
@@ -271,11 +271,11 @@ function removeWASD() {
     dButton.removeEventListener('mouseup', handleDReleaseEvent);
 }
 
-//      Speed control
+//      Sliders
 
-const speedSlider = document.querySelector(".speed-slider");
-const speedNumber = document.querySelector(".speed-number");
-let speedData;
+const speedSlider = document.getElementById("speed-slider");
+const speedNumber = document.getElementById("speed-number");
+let speedData = 100; // 100 is defualt
 
 // Null check becasue this element is not in the about page
 if (speedSlider) {
@@ -283,8 +283,25 @@ if (speedSlider) {
         speedData = Math.round((this.value/parseInt(speedSlider.getAttribute("max"))) * 100);
         speedNumber.innerHTML = "Speed: " + speedData + "%";
         
-        // Update speed value in user data set
+        // Update speed value in user dataset
         userData.speed = speedData;
+    
+        sendData();
+    }
+}
+
+const steerSlider = document.getElementById("steer-slider");
+const steerNumber = document.getElementById("steer-number");
+let steerData = 55; // 55 is the default
+
+// Null check becasue this element is not in the about page
+if (steerSlider) {
+    steerSlider.oninput = function() {
+        steerData = this.value;
+        steerNumber.innerHTML = "Steer: " + steerData + "°";
+        
+        // Update steer angle value in user dataset
+        userData.steerAngle = steerData;
     
         sendData();
     }

@@ -28,7 +28,7 @@
         <div class="toprow">
             <div>
                 <div class="leftside-toprow">
-                    <img class="logo" src="./assets/logo-frame1.svg" alt="driverbot logo">
+                    <a href="./index.html" class="logo-link"><img class="logo" src="./assets/logo-frame1.svg" alt="driverbot logo"></a>
                     <h1>driverbot</h1>
                 </div>
                 <p class="driverbot-info mono">A project about a small-scale Lego-based vehicle.</p>
@@ -104,10 +104,16 @@
                             </div>
                         </div>
                     </div>
-                    <div class="speed-wrapper">
-                        <div class="speed-slider-wrapper">
-                            <input type="range" min="0" max="300" value="0" step="30" class="speed-slider">
-                            <p class="speed-number">Speed: 0%</p>
+                    <div class="slider-wrapper">
+                        <div class="slider-container">
+                            <p class="slider-number" id="speed-number">Speed: 50%</p>
+                            <input type="range" min="0" max="300" value="150" step="30" class="control-slider" id="speed-slider">
+                        </div>
+                    </div>
+                    <div class="slider-wrapper">
+                        <div class="slider-container">
+                            <p class="slider-number" id="steer-number">Steer: 55°</p>
+                            <input type="range" min="5" max="55" value="55" step="5" class="control-slider" id="steer-slider">
                         </div>
                     </div>
                     <div class="position-map-wrapper">
@@ -123,7 +129,7 @@
                             <h2>Position</h2>
                             <div>
                                 <p class="position-info-text mono">x: 0 y: 0</p>
-                                <p class="position-info-description mono">This is an estimate of where the driverbot most likely is located relative to the start position. The cordinates show the distance from the start position (0, 0). 10 cordinate points represant 1 meter (m).</p>
+                                <p class="position-info-description mono">This is an estimate of where the driverbot most likely is located relative to the start position. The cordinates show the distance from the start position (0, 0). 10 cordinate points represant 1 centimeter (cm).</p>
                             </div>
                         </div>
                     </div>

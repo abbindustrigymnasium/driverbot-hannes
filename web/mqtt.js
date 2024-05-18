@@ -1,4 +1,4 @@
-//      HANDLING MQTT RELATED THINGS
+//      THIS FILE IS HANDLING MQTT RELATED THINGS
 
 //      MQTT connection
 
@@ -51,6 +51,7 @@ let userData = {
     "backwards": 0,
     "right": 0,
     "speed": speedData,
+    "steerAngle": steerData  // This is the steer angle
 };
 
 // JSON of the user data set
@@ -85,21 +86,40 @@ function connect() {
         console.log('Connected to the broker.');
         connectionTime = new Date();
         updateConnectionTime();
+
+        // Subscribe to topics after the connection is established
+        //client.subscribe('userData');
+        //sendData();
+        //client.subscribe('espData');
+    });
+
+    // Log when disconnected
+    client.on('close', function() {
+        console.log("Disconnected from the broker.");
     });
 
     client.on('error', function (error) {
         console.log(error);
     });
 
+    // Called each time a message is received
     client.on('message', function (topic, message) {
-        // Called each time a message is received
+        // For testing: Log userData changes
+        if (topic == "userData") {
+            // Parse JSON data
+            let recievedData = JSON.parse(message);
+            
+            // Process received data
+            console.log("User data: ", topic, recievedData);   
+        }
 
-        // Parse JSON data
-        let recievedData = JSON.parse(message);
-        
-        // Process received data
-        console.log('Received data:', topic, recievedData);
+        if (topic == "espData") {
+            console.log("Message from esp: ", message);
+        }
     });
+
+    client.subscribe('userData');
+    client.subscribe('espData');
 
     //      Connection time
 
@@ -124,9 +144,6 @@ function connect() {
     function pad(num) {
         return (num < 10 ? '0' : '') + num;
     }
-
-    client.subscribe('userData');
-    sendData();
 
     // Show connection info
     infoCluster.innerHTML = "Cluster URL: " + clusterURL;
@@ -154,11 +171,6 @@ function disconnect() {
     console.log("Disconnecting...");
 
     client.end();
-
-    // Log when disconnected
-    client.on('close', function() {
-        console.log("Disconnected from the broker.");
-    });
 
     // When all done, show connect form again + reset connection time
     clearTimeout(connectionTimeoutId);
