@@ -12,10 +12,12 @@
 
 - Web
     - index.html    Skelton
-    - main.js    Handling connection between web and MQTT broker, controls all web interactivity
+    - main.js    Controls all web interactivity
+    - mqtt.js    Handling connection between web and MQTT broker
     - style.css    Styling
 - Arduino
     - driverbot.cpp    All driverbot functions, connection between ESP8266 and MQTT broker
+    - maybe motorFunctions.cpp for modularity?
 
 **`website (publisher)`** → **`webinput`** → **`MQTT broker`** → **`ESP (subscriber)`** → **`driverbot`**
 
