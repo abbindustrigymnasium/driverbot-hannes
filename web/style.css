@@ -659,6 +659,29 @@ input:focus {
     left: -26px;
 }
 
+.position-target {
+    width: 6px;
+    height: 6px;
+    background-color: var(--red-light);
+    position: absolute;
+    left: calc(50% - 3px);
+    top: calc(50% - 3px);
+    display: none;
+}
+
+.position-target::after {
+    content: "target";
+    position: relative;
+    font-family: "Roboto Mono", monospace;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-size: 0.6rem;
+    font-style: normal;
+    top: -25px;
+    left: -15px;
+    color: var(--red-light);
+}
+
 .crosshair-wrapper {
     opacity: 0;
     width: 100%;
@@ -793,6 +816,10 @@ footer {
     display: flex;
     column-gap: 1em;
     height: 100%;
+}
+
+.small-divider {
+    user-select: none;
 }
 
 /*   Dark mode toggle switch, switch between the different themes   */

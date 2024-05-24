@@ -118,6 +118,7 @@
                     </div>
                     <div class="position-map-wrapper">
                         <div class="position-map">
+                            <div class="position-target"></div>
                             <div class="position-dot"></div>
                             <div class="crosshair-wrapper">
                                 <div id="crosshair-horizontal" class="dotted-effect"></div>
@@ -129,7 +130,7 @@
                             <h2>Position</h2>
                             <div>
                                 <p class="position-info-text mono">x: 0 y: 0</p>
-                                <p class="position-info-description mono">This is an estimate of where the driverbot most likely is located relative to the start position. The cordinates show the distance from the start position (0, 0). 10 cordinate points represant 1 centimeter (cm).</p>
+                                <p class="position-info-description mono">This is an estimate of where the driverbot most likely is located relative to the start position. The cordinates show the distance from the start position (0, 0). 1 cordinate unit represant 1 centimeter (cm).</p>
                             </div>
                         </div>
                     </div>
@@ -140,7 +141,7 @@
                 <div class="learn-more-row">
                     <h2>Feeling lost?</h2>
                     <div class="learn-more-button-wrapper">
-                        <a href="./about.html" target="_blank"><button class="button"><span class="button-text">Learn More &#129149;</span><span class="button-text">About driverbot</span></button></a>
+                        <a href="./about.html"><button class="button"><span class="button-text">Learn More &#129149;</span><span class="button-text">About driverbot</span></button></a>
                     </div>
                 </div>
             </section>
@@ -164,12 +165,16 @@
             <div class="footer-group">
                 <a target="_blank" href="https://github.com/abbindustrigymnasium/driverbot-hannes.git" class="link-light">github</a>
                 <img class="github-mark" src="./assets/github-mark.svg" alt="GitHub mark">
-                <p>v 0.1</p>
+                <p class="small-divider">|</p>
                 <a href="https://www.hitachigymnasiet.se/" target="_blank" class="hitachi-link"><img class="hitachi-icon" src="./assets/hitachi-icon.svg" alt="Hitachi icon"></a>
             </div>
         </footer>
     </body>
     <!-- Connect JavaScript -->
+    <script>
+        // Initialize a mqtt variable globally
+        console.log(mqtt);
+    </script>
     <script src="./main.js"></script>
     <script src="./mqtt.js"></script>
 </html>

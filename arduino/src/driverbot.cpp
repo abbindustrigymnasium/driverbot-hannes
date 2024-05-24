@@ -77,13 +77,17 @@ void setDateTime() {
     Serial.printf("%s %s", tzname[0], asctime(&timeinfo));
 }
 
-// Init JSON field variables
+// Init JSON field variables for userData
 int forward;
 int left;
 int backwards;
 int right;
 int speedPercentage;
 int steerAngle;
+int targetX; // Start with no target position
+int targetY;
+
+String espStatus = "";
 
 // Motor variables
 int maxMotorSpeed = 255;
@@ -94,32 +98,82 @@ int maxMotorSpeed = 255;
 Servo servo;
 #define servoPin 4   //D2 (GPIO 4)
 
-void driveForward(int driveSpeed) {
+// Position
+int currentX = 0; // Start position is (0, 0)
+int currentY = 0;
+unsigned long lastTime = 0;
+unsigned long currentTime = 0;
+const float speedInCmPerSec = 3.0; // Calibrated speed in cm/s
+const float timeToTurn90Degrees = 1.0; // Time to turn 90 degrees in seconds
+
+const float baseSpeedInCmPerSec = 5.0; // Base speed in cm/s at maximum drive speed (255)
+
+float calculateCurrentSpeed(int driveSpeed) {
+    return baseSpeedInCmPerSec * (driveSpeed / 255.0);
+}
+
+void sendEspData() {
+    StaticJsonDocument<200> doc;
+    doc["status"] = espStatus;
+    doc["currentX"] = currentX;
+    doc["currentY"] = currentY;
+
+    char buffer[256];
+    size_t n = serializeJson(doc, buffer);
+    buffer[n] = '\0';  // Null-terminate the buffer
+    client->publish("espData", buffer, n);
+}
+
+void driveForward(int speed) {
     Serial.print("Driving forward with the speed of ");
-    Serial.print(driveSpeed);
+    Serial.print(speed);
 
     if (forward == 1 && backwards == 0) {
         digitalWrite(motorPinRightDir, 0);
-        analogWrite(motorPinRightSpeed, driveSpeed);
+        analogWrite(motorPinRightSpeed, speed);
+
+        // Calculate the elapsed time
+        currentTime = millis();
+        float elapsedTime = (currentTime - lastTime) / 1000.0; // Convert milliseconds to seconds
+        lastTime = currentTime;
+
+        // Calculate the distance traveled
+        float currentSpeed = calculateCurrentSpeed(speed);
+        float distance = currentSpeed * elapsedTime;
+        currentY += distance; // Assuming forward movement increases Y-coordinate
+
+        sendEspData();
     }
 }
 
-void driveBackward(int driveSpeed) {
+void driveBackward(int speed) {
     Serial.print("Driving backward with the speed of ");
-    Serial.print(driveSpeed);
+    Serial.print(speed);
 
     if (backwards == 1 && forward == 0) {
         digitalWrite(motorPinRightDir, 1);
-        analogWrite(motorPinRightSpeed, driveSpeed);
+        analogWrite(motorPinRightSpeed, speed);
+
+        // Calculate the elapsed time
+        currentTime = millis();
+        float elapsedTime = (currentTime - lastTime) / 1000.0;
+        lastTime = currentTime;
+
+        // Calculate the distance traveled
+        float currentSpeed = calculateCurrentSpeed(speed);
+        float distance = currentSpeed * elapsedTime;
+        currentY -= distance; // Assuming backward movement decreases Y-coordinate
+
+        sendEspData();
     }
-}   
+}
 
 void stopDriving() {
     digitalWrite(motorPinRightDir, 0);
     analogWrite(motorPinRightSpeed, 0);
 }
 
-void steerRight(int angle) {
+void steerRight(int angle, int speed) {
     Serial.print("Steering right with ");
     Serial.print(angle);
     Serial.print("° angle");
@@ -127,10 +181,24 @@ void steerRight(int angle) {
     // Make sure only right is hold down
     if (right == 1 && left == 0) {
         servo.write(90 + angle);
+
+        // Calculate the elapsed time
+        currentTime = millis();
+        float elapsedTime = (currentTime - lastTime) / 1000.0;
+        lastTime = currentTime;
+
+        // Calculate the distance traveled while turning
+        float currentSpeed = calculateCurrentSpeed(speed);
+        float distance = currentSpeed * elapsedTime;
+        // Assuming right turn increases X-coordinate and decreases Y-coordinate
+        currentX += distance * cos(angle * PI / 180.0);
+        currentY -= distance * sin(angle * PI / 180.0);
+
+        sendEspData();
     }
 }
 
-void steerLeft(int angle) {
+void steerLeft(int angle, int speed) {
     Serial.print("Steering left with ");
     Serial.print(angle);
     Serial.print("° angle");
@@ -138,12 +206,30 @@ void steerLeft(int angle) {
     // Make sure only left is hold down
     if (left == 1 && right == 0) {
         servo.write(90 - angle);
+
+        // Calculate the elapsed time
+        currentTime = millis();
+        float elapsedTime = (currentTime - lastTime) / 1000.0;
+        lastTime = currentTime;
+
+        // Calculate the distance traveled while turning
+        float currentSpeed = calculateCurrentSpeed(speed);
+        float distance = currentSpeed * elapsedTime;
+        // Assuming right turn increases X-coordinate and decreases Y-coordinate
+        currentX += distance * cos(angle * PI / 180.0);
+        currentY -= distance * sin(angle * PI / 180.0);
+
+        sendEspData();
     }
 }
 
 // Reset steering if you steered right
 void resetSteering() {
    servo.write(90);
+}
+
+void moveToTarget(int x, int y) {
+    Serial.print("Moving to: " + '(' + x + ',' + y + ')');
 }
 
 // Recieving a message from the broker
@@ -156,36 +242,46 @@ void callback(char* topic, byte* payload, unsigned int length) {
     StaticJsonDocument<200> doc;
     deserializeJson(doc, payload, length);
 
-    // Access the JSON fields
+    // Access the JSON fields for userData
     forward = doc["forward"];
-    left = doc["left"];
+    left = doc["left"]; 
     backwards = doc["backwards"];
     right = doc["right"];
     speedPercentage = doc["speed"];
     steerAngle = doc["steerAngle"];
+    targetX = doc["targetX"];
+    targetY = doc["targetY"];
 
     // Print the received JSON data
     Serial.print("Received JSON: ");
     serializeJson(doc, Serial);
     Serial.println();
 
+    // Calculate driveSpeed
+    int driveSpeed = (speedPercentage*maxMotorSpeed)/100;
+
     // Check if the topic is "userData"
     if (strcmp(topic, "userData") == 0) {
         // Check for different user inputs
         if (forward == 1) {
-            driveForward((speedPercentage*maxMotorSpeed)/100);
+            driveForward(driveSpeed);
         } else if (backwards == 1) {
-            driveBackward((speedPercentage*maxMotorSpeed)/100);
+            driveBackward(driveSpeed);
         } else if (forward == 0 && backwards == 0) {
             stopDriving();
         }
 
         if (right == 1) {
-            steerRight(steerAngle);
+            steerRight(steerAngle, driveSpeed);
         } else if (left == 1) {
-            steerLeft(steerAngle);
+            steerLeft(steerAngle, driveSpeed);
         } else if (right == 0 && left == 0) {
             resetSteering();
+        }
+
+        // Move only if the target position is a different location from the current one
+        if (currentX != targetX && currentY != targetY) {
+            moveToTarget(targetX, targetY);
         }
     }
 }
@@ -198,11 +294,12 @@ void reconnect() {
         String clientId = "ESP8266Client - MyClient";
 
         // Attempt to connect
-        if (client->connect(clientId.c_str(), "Hannes Gingby", "!xfdq4.g6XM2!vh")) {
+        if (client->connect(clientId.c_str(), "Hannes_Gingby", "!xfdq4.g6XM2!vh")) {
             Serial.println("connected");
 
             // Once connected, publish that the esp is connected
-            client->publish("espData", "ESP8266 is connected");
+            espStatus = "connected";
+            sendEspData();
 
             // Subscribe to the user inputs topic
             client->subscribe("userData");
@@ -265,59 +362,6 @@ void loop() {
     }
     client->loop();
 }
-
-/* // For later
-#include <Arduino.h>
-
-#define motorPinRightDir 0   //D2
-#define motorPinRightSpeed 5    //D1
-
-int speed = 100;
-int dir = 0;
-int speedIncrement = 5;
-int maxSpeed = 250;
-
-void setup() {
-  // put your setup code here, to run once:
-  pinMode(motorPinRightDir, OUTPUT);
-  pinMode(motorPinRightSpeed, OUTPUT);
-
-  Serial.begin(115200);
-}
-
-void setSpeed() {
-  // Speed up
-  if (speed < maxSpeed)
-  {
-    speed = speed + speedIncrement;
-  }
-
-  // Speed down when reached max speed
-  if (speed = maxSpeed)
-  {
-    if (speed != 0) {
-      speed = speed - speedIncrement;
-    }
-  }
-}
-
-void drive(int speed, int direction) {
-  digitalWrite(motorPinRightDir, direction);
-  analogWrite(motorPinRightSpeed, speed);
-}
-
-void loop() {
-  setSpeed();
-
-  Serial.println("Speed (RPM): " + String(speed));
-  Serial.println("Direction: " + String(dir));
-
-  drive(speed, dir);
-
-  delay(200);
-}
-
-*/
 
 /*
 void callback(char* topic, byte* payload, unsigned int length) {

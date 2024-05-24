@@ -160,19 +160,21 @@ function handleKeyEvent(event) {
         // Check for WASD press
         if (event.key === 'w') {
             userData.forward = 1;
+            sendUserData();
             wButton.style.backgroundColor = "var(--alt-text-color)";
         } else if (event.key === 'a') {
             userData.left = 1;
+            sendUserData();
             aButton.style.backgroundColor = "var(--alt-text-color)";
         } else if (event.key === 's') {
             userData.backwards = 1;
+            sendUserData();
             sButton.style.backgroundColor = "var(--alt-text-color)";
         } else if (event.key === 'd') {
             userData.right = 1;
+            sendUserData();
             dButton.style.backgroundColor = "var(--alt-text-color)";
         }
-
-        sendData();
     }
 }
 
@@ -184,19 +186,21 @@ function handleKeyReleaseEvent(event) {
     // Check for WASD release
     if (event.key === 'w') {
         userData.forward = 0;
+        sendUserData();
         wButton.style.backgroundColor = "var(--main-text-color)";
     } else if (event.key === 'a') {
         userData.left = 0;
+        sendUserData();
         aButton.style.backgroundColor = "var(--main-text-color)";
     } else if (event.key === 's') {
         userData.backwards = 0;
+        sendUserData();
         sButton.style.backgroundColor = "var(--main-text-color)";
     } else if (event.key === 'd') {
         userData.right = 0;
+        sendUserData();
         dButton.style.backgroundColor = "var(--main-text-color)";
     }
-
-    sendData();
 }
 
 //      Simulate keypresses for mouseclicks
@@ -286,7 +290,7 @@ if (speedSlider) {
         // Update speed value in user dataset
         userData.speed = speedData;
     
-        sendData();
+        sendUserData();
     }
 }
 
@@ -303,7 +307,7 @@ if (steerSlider) {
         // Update steer angle value in user dataset
         userData.steerAngle = steerData;
     
-        sendData();
+        sendUserData();
     }
 }
 
@@ -314,20 +318,49 @@ const positionMap = document.querySelector(".position-map")
 const crosshairHorizontal = document.getElementById("crosshair-horizontal");
 const crosshairVertical = document.getElementById("crosshair-vertical");
 const positionCrosshairInfo = document.querySelector(".position-crosshair-info");
+const positionDot = document.querySelector(".position-dot");
+const positionTarget = document.querySelector(".position-target");
+
+let mouseX;
+let mouseY;
+
+//let currentX ;
+//let currentY;
+
+let targetX;
+let targetY;
+
+function clearTarget() {
+    //positionTarget.style.display = "none";
+}
 
 // Null check becasue this element is not in the about page
 if (positionMap) {
     positionMap.addEventListener('mousemove', function(e) {
         const boxRect = positionMap.getBoundingClientRect();
-        const mouseX = e.clientX - boxRect.left;
-        const mouseY = e.clientY - boxRect.top;
-    
-        crosshairVertical.style.left = mouseX + 'px';
-        crosshairHorizontal.style.top = mouseY + 'px';
-    
         // Note: 200 is half the width of the position map
-        positionCrosshairInfo.innerHTML = "x: " + Math.round(mouseX - 200) + "y: " + Math.round((mouseY - 200)/-1);
+        mouseX = Math.round((e.clientX - boxRect.left) - 200);
+        mouseY = Math.round(((e.clientY - boxRect.top) - 200)/-1);
+    
+        crosshairVertical.style.left = e.clientX - boxRect.left + "px";
+        crosshairHorizontal.style.top = e.clientY - boxRect.top + "px";
+
+        positionCrosshairInfo.innerHTML = "x: " + mouseX + "y: " + mouseY;
     });
+
+    positionMap.onclick = function() {
+        targetX = mouseX;
+        targetY = mouseY;
+
+        console.log("Repositioning dot, " + "calc(50% - 6px + " + targetX + "px " + ")" + " " + "calc(50% - 6px - " + targetY + "px" + ")");
+        positionTarget.style.left = "calc(50% - 6px + " + targetX + "px" + ")";
+        positionTarget.style.top = "calc(50% - 6px - " + targetY + "px" + ")";
+        positionTarget.style.display = "block";
+
+        userData.targetX = targetX;
+        userData.targetY = targetY;
+        sendUserData();
+    }
 }
 
 //      Open/close bottom bar

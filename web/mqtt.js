@@ -38,9 +38,6 @@ let clientID;
 let username;
 let password;
 
-// Initialize a mqtt variable globally
-console.log(mqtt);
-
 // Global client variable
 let client;
 
@@ -51,7 +48,9 @@ let userData = {
     "backwards": 0,
     "right": 0,
     "speed": speedData,
-    "steerAngle": steerData  // This is the steer angle
+    "steerAngle": steerData,  // This is the steer angle
+    "targetX": undefined,
+    "targetY": undefined
 };
 
 // JSON of the user data set
@@ -71,7 +70,8 @@ function connect() {
 
     //      MQTT
 
-    const clusterURL = 'wss://24481123c0884e459cd76ccc6ca6d326.s1.eu.hivemq.cloud:8884/mqtt';
+    //const clusterURL = 'wss://24481123c0884e459cd76ccc6ca6d326.s1.eu.hivemq.cloud:8884/mqtt';
+    const clusterURL = "wss://a8900a9a.ala.eu-central-1.emqxsl.com:8084/mqtt";
 
     // Initialize the MQTT client
     client = mqtt.connect(clusterURL, {
@@ -86,11 +86,6 @@ function connect() {
         console.log('Connected to the broker.');
         connectionTime = new Date();
         updateConnectionTime();
-
-        // Subscribe to topics after the connection is established
-        //client.subscribe('userData');
-        //sendData();
-        //client.subscribe('espData');
     });
 
     // Log when disconnected
@@ -103,23 +98,43 @@ function connect() {
     });
 
     // Called each time a message is received
+
     client.on('message', function (topic, message) {
         // For testing: Log userData changes
         if (topic == "userData") {
             // Parse JSON data
-            let recievedData = JSON.parse(message);
+            let recievedUserData = JSON.parse(message);
             
-            // Process received data
-            console.log("User data: ", topic, recievedData);   
+            // Log received data
+            console.log("User data: ", topic, recievedUserData);   
         }
 
         if (topic == "espData") {
-            console.log("Message from esp: ", message);
+            // Parse JSON data
+            let recievedEspData = JSON.parse(message);
+
+            console.log("Esp Data: ", recievedEspData);
         }
     });
 
     client.subscribe('userData');
     client.subscribe('espData');
+
+    sendUserData();
+
+    // Show connection info
+    infoCluster.innerHTML = "Cluster URL: " + clusterURL;
+    infoPort.innerHTML = "Port: 8884";
+    infoConnectionType.innerHTML = "Connection Type: WSS (WebSocket Secure)";
+    infoUsername.innerHTML = "Username: " + username;
+    infoPassword.innerHTML = "Password: " + "*".repeat(password.length);
+
+    // When all done, hide form + show the other dashboard sections
+    hideConnectForm();
+    showDashboard();
+
+    // Start listening for WASD key presses
+    startWASD();
 
     //      Connection time
 
@@ -144,24 +159,10 @@ function connect() {
     function pad(num) {
         return (num < 10 ? '0' : '') + num;
     }
-
-    // Show connection info
-    infoCluster.innerHTML = "Cluster URL: " + clusterURL;
-    infoPort.innerHTML = "Port: 8884";
-    infoConnectionType.innerHTML = "Connection Type: WSS (WebSocket Secure)";
-    infoUsername.innerHTML = "Username: " + username;
-    infoPassword.innerHTML = "Password: " + "*".repeat(password.length);
-
-    // When all done, hide form + show the other dashboard sections
-    hideConnectForm();
-    showDashboard();
-
-    // Start listening for WASD key presses
-    startWASD();
 }
 
 // Update and publish the data
-function sendData() {
+function sendUserData() {
     jsonUserData = JSON.stringify(userData);
     client.publish('userData', jsonUserData);
 }
