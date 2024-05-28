@@ -137,10 +137,16 @@ if (passwordIcon) {
             passwordIcon.alt = "password is hidden, show it"
             hiddenPassword = true;
         }
-    }    
+    }
 }
 
 //      Driving controls
+
+// Steer variable for userData
+let steer = "";
+
+// Drive direction variable for userData
+let direction = "";
 
 // Create an object to store the state of each key
 let keyPressed = {};
@@ -159,19 +165,19 @@ function handleKeyEvent(event) {
 
         // Check for WASD press
         if (event.key === 'w') {
-            userData.forward = 1;
+            userData.direction = "forward";
             sendUserData();
             wButton.style.backgroundColor = "var(--alt-text-color)";
         } else if (event.key === 'a') {
-            userData.left = 1;
+            userData.steer = "left";
             sendUserData();
             aButton.style.backgroundColor = "var(--alt-text-color)";
         } else if (event.key === 's') {
-            userData.backwards = 1;
+            userData.direction = "backward";
             sendUserData();
             sButton.style.backgroundColor = "var(--alt-text-color)";
         } else if (event.key === 'd') {
-            userData.right = 1;
+            userData.steer = "right";
             sendUserData();
             dButton.style.backgroundColor = "var(--alt-text-color)";
         }
@@ -185,19 +191,19 @@ function handleKeyReleaseEvent(event) {
     
     // Check for WASD release
     if (event.key === 'w') {
-        userData.forward = 0;
+        userData.direction = "";
         sendUserData();
         wButton.style.backgroundColor = "var(--main-text-color)";
     } else if (event.key === 'a') {
-        userData.left = 0;
+        userData.steer = "";
         sendUserData();
         aButton.style.backgroundColor = "var(--main-text-color)";
     } else if (event.key === 's') {
-        userData.backwards = 0;
+        userData.direction = "";
         sendUserData();
         sButton.style.backgroundColor = "var(--main-text-color)";
     } else if (event.key === 'd') {
-        userData.right = 0;
+        userData.steer = "";
         sendUserData();
         dButton.style.backgroundColor = "var(--main-text-color)";
     }
@@ -279,16 +285,16 @@ function removeWASD() {
 
 const speedSlider = document.getElementById("speed-slider");
 const speedNumber = document.getElementById("speed-number");
-let speedData = 100; // 100 is defualt
+let speed = 100; // 100 is defualt
 
 // Null check becasue this element is not in the about page
 if (speedSlider) {
     speedSlider.oninput = function() {
-        speedData = Math.round((this.value/parseInt(speedSlider.getAttribute("max"))) * 100);
-        speedNumber.innerHTML = "Speed: " + speedData + "%";
+        speed = Math.round((this.value/parseInt(speedSlider.getAttribute("max"))) * 100);
+        speedNumber.innerHTML = "Speed: " + speed + "%";
         
         // Update speed value in user dataset
-        userData.speed = speedData;
+        userData.speed = speed;
     
         sendUserData();
     }
@@ -296,16 +302,16 @@ if (speedSlider) {
 
 const steerSlider = document.getElementById("steer-slider");
 const steerNumber = document.getElementById("steer-number");
-let steerData = 55; // 55 is the default
+let steerAngle = 55; // 55 is the default
 
 // Null check becasue this element is not in the about page
 if (steerSlider) {
     steerSlider.oninput = function() {
-        steerData = this.value;
-        steerNumber.innerHTML = "Steer: " + steerData + "°";
+        steerAngle = this.value;
+        steerNumber.innerHTML = "Steer: " + steerAngle + "°";
         
         // Update steer angle value in user dataset
-        userData.steerAngle = steerData;
+        userData.steerAngle = steerAngle;
     
         sendUserData();
     }

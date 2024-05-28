@@ -6,7 +6,9 @@
         <title>driverbot Dashboard</title>
         <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
         <!-- MQTT -->
-        <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/5.5.6/mqtt.min.js" integrity="sha512-ObkRCf0+KbgJowpjPsO1aJ7DHFGRZJi+LKO6o7z89Z7G6Tvij6eudc8OsL9LxXBbjcSKshMdRfRNOcS1ZHFIEw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <!--Latest version, does not work right now for this reason: https://github.com/mqttjs/MQTT.js/issues/1873-->
+        <!--<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>-->
         <!-- GSAP -->
         <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
         <link rel="stylesheet" href="style.css">
@@ -80,10 +82,40 @@
                                 <img class="password-icon" src="./assets/hide-icon.svg" alt="password is hidden, show it">
                             </div>
                             <p class="info-time mono">Connected for </p>
+                            <p class="esp-info mono">ESP Status: </p>
                         </div>
                         <div class="disconnect-button-wrapper">
                             <button class="button" onclick="disconnect()"><span class="button-text">Disconnect &#129148;</span><span class="button-text">From MQTT</span></button>
                         </div>
+                    </div>
+                </section>
+                <div class="section-divider"></div>
+                <section class="configure-controller-section">
+                    <div>
+                        <h2>Configure Wii Controller</h2>
+                        <p class="controller-info mono">Configure a Nintendo Wii MotionPlus controller if you want to control the<br>with a wireless controller.</p>
+                        <div class="controller-button-wrapper">
+                            <button class="button" id="request-hid-device"><span class="button-text">Controller &#129149;</span><span class="button-text">Configure Wii</span></button>
+                        </div>
+                        <pre id="buttons"></pre>
+                        <ul>
+                            <li><b>X: </b><span id="accX"></span></li>
+                            <li><b>Y: </b><span id="accY"></span></li>
+                            <li><b>Z: </b><span id="accZ"></span></li>
+                        </ul>
+                        <button id="rumble">Toggle Rumbling</button>
+                        <button id="led1">Toggle LED 1</button>
+                        <button id="led2">Toggle LED 2</button>
+                        <button id="led3">Toggle LED 3</button>
+                        <button id="led4">Toggle LED 4</button>
+                        <button id="irbasic">IR Basic</button>
+                        <button id="irextended">IR Extended</button>
+                        <button id="irfull">IR Full</button>
+                        <button id="coreBtns">Core Buttons</button>
+                        <button id="coreBtnsACC">Core Buttons + Accelerometer</button>
+                        <button id="coreBtnsACCIR">Core Buttons + Accelerometer + IR</button>
+                        <canvas style="width: 80%; height: 500px; background-color: black;" id="IRcanvas"></canvas>
+                        <pre id="IRdebug"></pre>
                     </div>
                 </section>
                 <div class="section-divider"></div>
@@ -141,7 +173,7 @@
                 <div class="learn-more-row">
                     <h2>Feeling lost?</h2>
                     <div class="learn-more-button-wrapper">
-                        <a href="./about.html"><button class="button"><span class="button-text">Learn More &#129149;</span><span class="button-text">About driverbot</span></button></a>
+                        <a href="./about.html"><button class="button"><span class="button-text">About driverbot &#129149;</span><span class="button-text">Learn More</span></button></a>
                     </div>
                 </div>
             </section>
@@ -177,4 +209,5 @@
     </script>
     <script src="./main.js"></script>
     <script src="./mqtt.js"></script>
+    <script type="module" src="./controller.js"></script>
 </html>

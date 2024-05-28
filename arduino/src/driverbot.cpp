@@ -12,14 +12,15 @@
 #include <Servo.h>
 
 // Network credentials
-//const char* ssid = "ABB_Gym_IOT";
-//const char* password = "Welcome2abb";
+const char* ssid = "ABB_Gym_IOT";
+const char* password = "Welcome2abb";
 
-const char* ssid = "Hanness iPhone";
-const char* password = "11223344";
+//const char* ssid = "Hanness iPhone";
+//const char* password = "11223344";
 
 // MQTT cluster URL
-const char* mqtt_server = "24481123c0884e459cd76ccc6ca6d326.s1.eu.hivemq.cloud";
+//const char* mqtt_server = "24481123c0884e459cd76ccc6ca6d326.s1.eu.hivemq.cloud";
+const char* mqtt_server = "a8900a9a.ala.eu-central-1.emqxsl.com";
 
 // A single, global CertStore which can be used by all connections.
 // Needs to stay live the entire time any of the WiFiClientBearSSLs are present.
@@ -78,16 +79,12 @@ void setDateTime() {
 }
 
 // Init JSON field variables for userData
-int forward;
-int left;
-int backwards;
-int right;
+String direction;
+String steer;
 int speedPercentage;
 int steerAngle;
 int targetX; // Start with no target position
 int targetY;
-
-String espStatus = "";
 
 // Motor variables
 int maxMotorSpeed = 255;
@@ -114,7 +111,6 @@ float calculateCurrentSpeed(int driveSpeed) {
 
 void sendEspData() {
     StaticJsonDocument<200> doc;
-    doc["status"] = espStatus;
     doc["currentX"] = currentX;
     doc["currentY"] = currentY;
 
@@ -128,7 +124,7 @@ void driveForward(int speed) {
     Serial.print("Driving forward with the speed of ");
     Serial.print(speed);
 
-    if (forward == 1 && backwards == 0) {
+    if (direction == "forward") {
         digitalWrite(motorPinRightDir, 0);
         analogWrite(motorPinRightSpeed, speed);
 
@@ -150,7 +146,7 @@ void driveBackward(int speed) {
     Serial.print("Driving backward with the speed of ");
     Serial.print(speed);
 
-    if (backwards == 1 && forward == 0) {
+    if (direction == "backward") {
         digitalWrite(motorPinRightDir, 1);
         analogWrite(motorPinRightSpeed, speed);
 
@@ -179,7 +175,7 @@ void steerRight(int angle, int speed) {
     Serial.print("° angle");
 
     // Make sure only right is hold down
-    if (right == 1 && left == 0) {
+    if (steer == "right") {
         servo.write(90 + angle);
 
         // Calculate the elapsed time
@@ -204,7 +200,7 @@ void steerLeft(int angle, int speed) {
     Serial.print("° angle");
 
     // Make sure only left is hold down
-    if (left == 1 && right == 0) {
+    if (steer == "left") {
         servo.write(90 - angle);
 
         // Calculate the elapsed time
@@ -238,44 +234,42 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.print(topic);
     Serial.print("] ");
 
-    // Parse the JSON payload
-    StaticJsonDocument<200> doc;
-    deserializeJson(doc, payload, length);
-
-    // Access the JSON fields for userData
-    forward = doc["forward"];
-    left = doc["left"]; 
-    backwards = doc["backwards"];
-    right = doc["right"];
-    speedPercentage = doc["speed"];
-    steerAngle = doc["steerAngle"];
-    targetX = doc["targetX"];
-    targetY = doc["targetY"];
-
-    // Print the received JSON data
-    Serial.print("Received JSON: ");
-    serializeJson(doc, Serial);
-    Serial.println();
-
-    // Calculate driveSpeed
-    int driveSpeed = (speedPercentage*maxMotorSpeed)/100;
-
     // Check if the topic is "userData"
     if (strcmp(topic, "userData") == 0) {
+        // Parse the JSON payload
+        StaticJsonDocument<200> doc;
+        deserializeJson(doc, payload, length);
+
+        // Access the JSON fields for userData
+        direction = doc["direction"].as<String>();
+        steer = doc["steer"].as<String>();
+        speedPercentage = doc["speed"];
+        steerAngle = doc["steerAngle"];
+        targetX = doc["targetX"];
+        targetY = doc["targetY"];
+
+        // Print the received JSON data
+        Serial.print("Received JSON: ");
+        serializeJson(doc, Serial);
+        Serial.println();
+
+        // Calculate driveSpeed
+        int driveSpeed = (speedPercentage*maxMotorSpeed)/100;
+
         // Check for different user inputs
-        if (forward == 1) {
+        if (direction == "forward") {
             driveForward(driveSpeed);
-        } else if (backwards == 1) {
+        } else if (direction == "backward") {
             driveBackward(driveSpeed);
-        } else if (forward == 0 && backwards == 0) {
+        } else if (direction == "") {
             stopDriving();
         }
 
-        if (right == 1) {
+        if (steer == "right") {
             steerRight(steerAngle, driveSpeed);
-        } else if (left == 1) {
+        } else if (steer == "left") {
             steerLeft(steerAngle, driveSpeed);
-        } else if (right == 0 && left == 0) {
+        } else if (steer == "") {
             resetSteering();
         }
 
@@ -283,6 +277,11 @@ void callback(char* topic, byte* payload, unsigned int length) {
         if (currentX != targetX && currentY != targetY) {
             moveToTarget(targetX, targetY);
         }
+    }
+
+    if (strcmp(topic, "ping") == 0) {
+        // Send a ping back to the website client
+        client->publish("ping", "1");
     }
 }
 
@@ -297,12 +296,9 @@ void reconnect() {
         if (client->connect(clientId.c_str(), "Hannes_Gingby", "!xfdq4.g6XM2!vh")) {
             Serial.println("connected");
 
-            // Once connected, publish that the esp is connected
-            espStatus = "connected";
-            sendEspData();
-
-            // Subscribe to the user inputs topic
+            // Subscribe to the topics
             client->subscribe("userData");
+            client->subscribe("ping");
         } else {
             Serial.print("failed, rc = ");
             Serial.print(client->state());
@@ -313,9 +309,8 @@ void reconnect() {
     }
 }
 
+// Setup, running once
 void setup() {
-    // Setup, running once
-
     delay(500);
     Serial.begin(115200);
     delay(500);
@@ -360,41 +355,6 @@ void loop() {
     if (!client->connected()) {
         reconnect();
     }
+
     client->loop();
 }
-
-/*
-void callback(char* topic, byte* payload, unsigned int length) {
-    Serial.print("Message arrived [");
-    Serial.print(topic);
-    Serial.print("] ");
-    for (unsigned int i = 0; i < length; i++) {
-        Serial.print((char)payload[i]);
-    }
-    Serial.println();
-
-    // Switch on the LED if the first character is present
-    // if ((char)payload[0] != NULL) {
-    if (payload[0] != 0) {
-        digitalWrite(LED_BUILTIN, LOW); // Turn the LED on (Note that LOW is the voltage level but actually the LED is on; this is because it is active low on the ESP-01)
-        delay(500);
-        digitalWrite(LED_BUILTIN, HIGH); // Turn the LED off by making the voltage HIGH
-    } else {
-        digitalWrite(LED_BUILTIN, HIGH); // Turn the LED off by making the voltage HIGH
-    }
-}
-*/
-
-// For testing: publish 'hello world' message every 2 seconds.
-    /*
-    unsigned long now = millis();
-    if (now - lastMsg > 2000) {
-        lastMsg = now;
-        ++value;
-        //snprintf (msg, MSG_BUFFER_SIZE, "hello world #%ld", value);
-        snprintf (msg, MSG_BUFFER_SIZE, "hello world #%d", value);
-        Serial.print("Publish message: ");
-        Serial.println(msg);
-        client->publish("userData", msg);
-    }
-    */

@@ -15,6 +15,7 @@ const infoConnectionType = document.querySelector(".info-connection-type");
 const infoUsername = document.querySelector(".info-username");
 const infoPassword = document.querySelector(".info-password");
 const infoTime = document.querySelector(".info-time");
+const infoESP = document.querySelector(".esp-info");
 
 let connectionTimeoutId;
 
@@ -43,15 +44,15 @@ let client;
 
 // User data set, changes on different user events
 let userData = {
-    "forward": 0,
-    "left": 0,
-    "backwards": 0,
-    "right": 0,
-    "speed": speedData,
-    "steerAngle": steerData,  // This is the steer angle
+    "direction": direction,
+    "steer": steer,
+    "speed": speed,
+    "steerAngle": steerAngle,  // This is the steer angle
     "targetX": undefined,
     "targetY": undefined
 };
+
+let espStatus = "disconnected";
 
 // JSON of the user data set
 let jsonUserData;
@@ -64,31 +65,45 @@ function connect() {
     username = usernameInput.value.toString();
     password = passwordInput.value.toString();
 
+    // Generate a random clientID if the user does not input one
+    if (clientID == "") {
+        clientID = 'mqttjs_' + Math.random().toString(16).substr(2, 8);
+        console.log("Generated clientID: " + clientID);
+    }
+
+    // Reset the inputs
     clientIDInput.value = "";
     usernameInput.value = "";
     passwordInput.value = "";
 
     //      MQTT
 
+    const clusterURL = 'wss://a8900a9a.ala.eu-central-1.emqxsl.com:8084/mqtt';
     //const clusterURL = 'wss://24481123c0884e459cd76ccc6ca6d326.s1.eu.hivemq.cloud:8884/mqtt';
-    const clusterURL = "wss://a8900a9a.ala.eu-central-1.emqxsl.com:8084/mqtt";
 
     // Initialize the MQTT client
     client = mqtt.connect(clusterURL, {
         username: username,
         password: password,
-        clientId: clientID
+        clientId: clientID,
+        keepalive: 60,
+        protocolId: 'MQTT',
+        protocolVersion: 4,
+        clean: true,
+        reconnectPeriod: 1000,
+        connectTimeout: 30 * 1000
     });
 
     //      Callbacks
 
+    // Ones connected
     client.on('connect', function () {
         console.log('Connected to the broker.');
         connectionTime = new Date();
         updateConnectionTime();
     });
 
-    // Log when disconnected
+    // When disconnected
     client.on('close', function() {
         console.log("Disconnected from the broker.");
     });
@@ -112,13 +127,21 @@ function connect() {
         if (topic == "espData") {
             // Parse JSON data
             let recievedEspData = JSON.parse(message);
+            //infoESP.innerHTML = "ESP Status: " + recievedEspData.status;
 
             console.log("Esp Data: ", recievedEspData);
+        }
+
+        if (topic == "ping") {
+            if (message == "1") {
+                espStatus = "connected";
+            }
         }
     });
 
     client.subscribe('userData');
     client.subscribe('espData');
+    client.subscribe('ping');
 
     sendUserData();
 
@@ -135,6 +158,21 @@ function connect() {
 
     // Start listening for WASD key presses
     startWASD();
+
+    
+
+    // Set an interval for continuesly checking every 5 seconds if the ESP is connected or not, like a ping
+    setInterval(() => {
+        client.publish('ping', 0);
+
+        console.log(espStatus);
+
+        // If the ping has not changed in 5 seconds, then the esp is disconnected (or has troubles)
+        if (espStatus == "connected") {
+            espStatus = "disconnected";
+        }
+    }, 5000);
+
 
     //      Connection time
 
@@ -181,3 +219,5 @@ function disconnect() {
     // Stop listening for WASD key presses
     removeWASD();
 }
+
+infoESP.innerHTML = "ESP Status: " + espStatus;
