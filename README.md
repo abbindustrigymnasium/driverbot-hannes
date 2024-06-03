@@ -23,7 +23,7 @@ We were given the following requirements for the project:
 - **Remote Control**: Operate the car using a web-based interface. You can also control the car using a WiiMote controller if you have one.
 - **Compact Design**: The car's size does not exceed 15x15x15 centimeters.
 - **Full Motion**: Capable of moving in all directions, forward, backward, left and right. You can also control the drive speed and steer angle.
-- **Position Track**: On the web interface you can view the estimate of were the driverbot is located (based on user inputs). There is also an option to click on a so-called *position map* and click on a point where it should go to.
+- **Position Track**: On the web interface you can view the estimate of were the driverbot is located (based on user inputs).
 
 ## Showcase
 
