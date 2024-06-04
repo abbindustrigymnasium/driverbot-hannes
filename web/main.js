@@ -1,13 +1,11 @@
-//      THIS FILE IS MAINLY HANDLING EVENTS ON THE PAGE
-
-//      Menu
+//  This file is mainly handling events on the page
 
 const menuHitbox = document.querySelector("nav");
 const menuOverlay = document.querySelector(".menu-overlay");
 const closeIcon = document.querySelector(".close-icon");
 const body = document.querySelector("body");
 
-//  Display menu when hitbox is clicked
+//  Display menu when clicking on the hitbox
 menuHitbox.onclick = function() {
     console.log("Opened menu");
 
@@ -15,14 +13,13 @@ menuHitbox.onclick = function() {
     body.style.overflow = "hidden";
 }
 
+// Close menu
 closeIcon.onclick = function() {
     console.log("Closed menu");
 
     menuOverlay.style.display = "none";
     body.style.overflow = "unset";
 }
-
-//      Color themes
 
 const darkModeToggle = document.getElementById("darkModeToggle");
 const cssRoot = document.querySelector(":root");
@@ -33,28 +30,30 @@ const githubMark = document.querySelector(".github-mark");
 const passwordIcon = document.querySelector(".password-icon");
 const openCloseIcon = document.querySelector(".open-close-icon");
 
-// Close icon color on different events
+/*
+Change close-icon color on different events
+Note: I generated CSS filters using https://isotropic.co/tool/hex-color-to-css-filter/ to get specific colors
+*/
 
 // Hover
-const hoverHandler = () => {
+const closeIconHoverHandler = () => {
     closeIcon.style.filter = "invert(34%) sepia(77%) saturate(1199%) hue-rotate(321deg) brightness(86%) contrast(82%)";
 };
 
 // Defualt state, light mode
-const mouseoutHandlerLightMode = () => {
+const closeIconMouseoutHandlerLightMode = () => {
     closeIcon.style.filter = "invert(0%) sepia(39%) saturate(5179%) hue-rotate(36deg) brightness(87%) contrast(88%)";
 };
 
 // Defualt state, dark mode
-const mouseoutHandlerDarkMode = () => {
+const closeIconMouseoutHandlerDarkMode = () => {
     closeIcon.style.filter = "invert(99%) sepia(1%) saturate(2039%) hue-rotate(37deg) brightness(119%) contrast(86%)";
 };
 
-closeIcon.addEventListener('mouseover', hoverHandler);
-closeIcon.addEventListener('mouseout', mouseoutHandlerLightMode);
+closeIcon.addEventListener('mouseover', closeIconHoverHandler);
+closeIcon.addEventListener('mouseout', closeIconMouseoutHandlerLightMode);
 
-//  Switch between light and dark mode
-// Note: generated CSS filters using https://isotropic.co/tool/hex-color-to-css-filter/
+// Switch between light & dark mode
 function switchTheme() {
     if (darkModeToggle.checked == true) {
         console.log("Switching to dark theme");
@@ -63,14 +62,12 @@ function switchTheme() {
         cssRoot.style.setProperty("--main-text-color", "#FFFCE1");
         cssRoot.style.setProperty("--grey", "#42403C");
         cssRoot.style.setProperty("--highlight-grey", "#252422");
-
         logo.classList.add("logo-tinted");
 
         // Remove close icon light mode color
-        closeIcon.removeEventListener('mouseout', mouseoutHandlerLightMode);
-
+        closeIcon.removeEventListener('mouseout', closeIconMouseoutHandlerLightMode);
         // Add new one
-        closeIcon.addEventListener('mouseout', mouseoutHandlerDarkMode);
+        closeIcon.addEventListener('mouseout', closeIconMouseoutHandlerDarkMode);
 
         // Changing colours of icons
         openCloseIcon.src = "./assets/open-close-arrow-tinted.svg";
@@ -91,14 +88,12 @@ function switchTheme() {
         cssRoot.style.setProperty("--main-text-color", "#0F0F0F");
         cssRoot.style.setProperty("--grey", "#b8b8b8");
         cssRoot.style.setProperty("--highlight-grey", "#dfdfdf");
-
         logo.classList.remove("logo-tinted");
 
         // Remove close icon dark mode color
-        closeIcon.removeEventListener('mouseout', mouseoutHandlerDarkMode);
-
+        closeIcon.removeEventListener('mouseout', closeIconMouseoutHandlerDarkMode);
         // Add new one
-        closeIcon.addEventListener('mouseout', mouseoutHandlerLightMode);
+        closeIcon.addEventListener('mouseout', closeIconMouseoutHandlerLightMode);
 
         // Changing colors of icons
         openCloseIcon.src = "./assets/open-close-arrow.svg";
@@ -115,16 +110,35 @@ function switchTheme() {
     }
 }
 
-// Set to dark mode at startup
+const footerGroup = document.querySelectorAll(".footer-group");
+const creditNotice = document.querySelector(".credit-notice");
+
+// Open/close bottom bar when close icon is pressed
+openCloseIcon.onclick = function() {
+    if (creditNotice.style.display != "none") {
+        for (let i = 0; i < footerGroup.length; i++) {
+            footerGroup[i].style.display = "none";
+        }
+        creditNotice.style.display = "none";
+        openCloseIcon.classList.add("open-close-icon180");
+    } else {
+        for (let i = 0; i < footerGroup.length; i++) {
+            footerGroup[i].style.display = "flex";
+        }
+        creditNotice.style.display = "flex";
+        openCloseIcon.classList.remove("open-close-icon180");
+    }
+}
+
+// Set to dark mode at startup, delete these 2 lines if you want white mode as default
 darkModeToggle.checked = true;
 switchTheme();
-
-//      Hide/show password with the icon
 
 let hiddenPassword = true;
 
 // Null check becasue this element is not in the about page
 if (passwordIcon) {
+    // Hide/show password with the icon
     passwordIcon.onclick = function() {
         if (hiddenPassword) {
             infoPassword.innerHTML = "Password: " + password;
@@ -140,21 +154,21 @@ if (passwordIcon) {
     }
 }
 
-//      Driving controls
-
-// Steer variable for userData
+// Variables for userData
 let steer = "";
-
-// Drive direction variable for userData
 let direction = "";
-
-// Create an object to store the state of each key
 let keyPressed = {};
 
+// Driving controls
 const wButton = document.querySelector(".w-button");
 const aButton = document.querySelector(".a-button");
 const sButton = document.querySelector(".s-button");
 const dButton = document.querySelector(".d-button");
+
+// Recording functionality
+let recording = false;
+let playback = false;
+let recordedEvents = [];
 
 // Function to handle key events
 function handleKeyEvent(event) {
@@ -163,7 +177,7 @@ function handleKeyEvent(event) {
         // Set the flag to true for the pressed key
         keyPressed[event.key] = true;
 
-        // Check for WASD press
+        // Check for WASD presses
         if (event.key === 'w') {
             userData.direction = "forward";
             sendUserData();
@@ -180,6 +194,15 @@ function handleKeyEvent(event) {
             userData.steer = "right";
             sendUserData();
             dButton.style.backgroundColor = "var(--alt-text-color)";
+        }
+
+        // If recording, then track & store the events
+        if (recording) {
+            recordedEvents.push({
+                type: 'keydown',
+                key: event.key,
+                time: Date.now()
+            });
         }
     }
 }
@@ -207,10 +230,50 @@ function handleKeyReleaseEvent(event) {
         sendUserData();
         dButton.style.backgroundColor = "var(--main-text-color)";
     }
+
+    // If recording, then track & store the events
+    if (recording) {
+        recordedEvents.push({
+            type: 'keyup',
+            key: event.key,
+            time: Date.now()
+        });
+    }
 }
 
-//      Simulate keypresses for mouseclicks
+// Function to play back recorded events
+function playbackEvents() {
+    if (recordedEvents.length === 0) return;
+    
+    playback = true;
+    let startTime = recordedEvents[0].time;
+    
+    // Simulate the event for each event, taking timings into account
+    recordedEvents.forEach(event => {
+        setTimeout(() => {
+            if (event.type === 'keydown') {
+                handleKeyEvent({ key: event.key });
+            } else if (event.type === 'keyup') {
+                handleKeyReleaseEvent({ key: event.key });
+            }
+        }, event.time - startTime);
+    });
 
+    setTimeout(() => {
+        playback = false;
+    }, recordedEvents[recordedEvents.length - 1].time - startTime);
+}
+
+function startRecording() {
+    recordedEvents = [];
+    recording = true;
+}
+
+function stopRecording() {
+    recording = false;
+}
+
+// Simulate keypresses for mouseclicks
 function handleWEvent() {
     handleKeyEvent({ key: 'w' });
 }
@@ -262,7 +325,7 @@ function startWASD() {
     dButton.addEventListener('mouseup', handleDReleaseEvent);
 }
 
-// Remove WASD listeners
+// Remove WASD event listeners
 function removeWASD() {
     // Remove event listeners for keydown and keyup events
     document.removeEventListener('keydown', handleKeyEvent);
@@ -281,18 +344,16 @@ function removeWASD() {
     dButton.removeEventListener('mouseup', handleDReleaseEvent);
 }
 
-//      Sliders
-
 const speedSlider = document.getElementById("speed-slider");
 const speedNumber = document.getElementById("speed-number");
 let speed = 100; // 100 is defualt
 
 // Null check becasue this element is not in the about page
 if (speedSlider) {
+    // When slider is changed
     speedSlider.oninput = function() {
         speed = Math.round((this.value/parseInt(speedSlider.getAttribute("max"))) * 100);
         speedNumber.innerHTML = "Speed: " + speed + "%";
-        
         // Update speed value in user dataset
         userData.speed = speed;
     
@@ -302,14 +363,14 @@ if (speedSlider) {
 
 const steerSlider = document.getElementById("steer-slider");
 const steerNumber = document.getElementById("steer-number");
-let steerAngle = 55; // 55 is the default
+let steerAngle = 65; // 65 is the default
 
 // Null check becasue this element is not in the about page
 if (steerSlider) {
+    // When slider is changed
     steerSlider.oninput = function() {
         steerAngle = this.value;
         steerNumber.innerHTML = "Steer: " + steerAngle + "°";
-        
         // Update steer angle value in user dataset
         userData.steerAngle = steerAngle;
     
@@ -317,36 +378,36 @@ if (steerSlider) {
     }
 }
 
-//      Position map
-
+// Position map
 const positionMap = document.querySelector(".position-map")
-
 const crosshairHorizontal = document.getElementById("crosshair-horizontal");
 const crosshairVertical = document.getElementById("crosshair-vertical");
 const positionCrosshairInfo = document.querySelector(".position-crosshair-info");
 const positionDot = document.querySelector(".position-dot");
 const positionTarget = document.querySelector(".position-target");
+const positionInfoText = document.querySelector(".position-info-text");
 
 let mouseX;
 let mouseY;
-
-//let currentX ;
-//let currentY;
-
+let currentX;
+let currentY;
 let targetX;
 let targetY;
 
-function clearTarget() {
-    //positionTarget.style.display = "none";
+// Function for clearing the target
+function clearPositionTarget() {
+    positionTarget.style.display = "none";
+    targetX = undefined;
+    targetY = undefined;
 }
 
 // Null check becasue this element is not in the about page
 if (positionMap) {
+    // Track mouse position on the map
     positionMap.addEventListener('mousemove', function(e) {
         const boxRect = positionMap.getBoundingClientRect();
-        // Note: 200 is half the width of the position map
-        mouseX = Math.round((e.clientX - boxRect.left) - 200);
-        mouseY = Math.round(((e.clientY - boxRect.top) - 200)/-1);
+        mouseX = Math.round((e.clientX - boxRect.left) - positionMap.clientWidth/2);
+        mouseY = Math.round(((e.clientY - boxRect.top) - (positionMap.clientHeight/2))/-1);
     
         crosshairVertical.style.left = e.clientX - boxRect.left + "px";
         crosshairHorizontal.style.top = e.clientY - boxRect.top + "px";
@@ -354,38 +415,13 @@ if (positionMap) {
         positionCrosshairInfo.innerHTML = "x: " + mouseX + "y: " + mouseY;
     });
 
+    // Add target
     positionMap.onclick = function() {
         targetX = mouseX;
         targetY = mouseY;
 
-        console.log("Repositioning dot, " + "calc(50% - 6px + " + targetX + "px " + ")" + " " + "calc(50% - 6px - " + targetY + "px" + ")");
         positionTarget.style.left = "calc(50% - 6px + " + targetX + "px" + ")";
         positionTarget.style.top = "calc(50% - 6px - " + targetY + "px" + ")";
         positionTarget.style.display = "block";
-
-        userData.targetX = targetX;
-        userData.targetY = targetY;
-        sendUserData();
-    }
-}
-
-//      Open/close bottom bar
-
-const footerGroup = document.querySelectorAll(".footer-group");
-const creditNotice = document.querySelector(".credit-notice");
-
-openCloseIcon.onclick = function() {
-    if (creditNotice.style.display != "none") {
-        for (let i = 0; i < footerGroup.length; i++) {
-            footerGroup[i].style.display = "none";
-        }
-        creditNotice.style.display = "none";
-        openCloseIcon.classList.add("open-close-icon180");
-    } else {
-        for (let i = 0; i < footerGroup.length; i++) {
-            footerGroup[i].style.display = "flex";
-        }
-        creditNotice.style.display = "flex";
-        openCloseIcon.classList.remove("open-close-icon180");
     }
 }

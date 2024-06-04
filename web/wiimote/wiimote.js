@@ -1,3 +1,5 @@
+// This file is responsible for communicating with the controller
+
 import {
     toBigEndian,
     numbersToBuffer,
@@ -18,9 +20,11 @@ import {
     InputReport
 } from "./const.js"
 
+// Export class
 export default class WIIMote{
     constructor(device){
         this.device = device;
+        this.rumblingStatus = false
         this.buttonStatus = {
             "DPAD_LEFT" : false,
             "DPAD_RIGHT": false,
@@ -35,13 +39,11 @@ export default class WIIMote{
             "HOME": false
         };
         this.ledStatus = [
-            false,  //led 1
-            false,  //led 2
-            false,  //led 3
-            false   //led 4 
+            false,  // LED 1
+            false,  // LED 2
+            false,  // LED 3
+            false   // LED 4 
         ];
-
-        this.rumblingStatus = false
 
         this.IrListener = null
         this.AccListener = null
@@ -82,7 +84,7 @@ export default class WIIMote{
 
         this.writeRegister(RegisterType.CONTROL, 0xb00030, [0x08])
 
-        /// update data tracking mode
+        /// Update data tracking mode
         this.setDataTracking(DataReportMode.CORE_BUTTONS_ACCEL_IR)
     }
 
@@ -98,10 +100,10 @@ export default class WIIMote{
     toggleRumble(){
         var state = Rumble.ON;
 
-        if(this.rumblingStatus){
+        if (this.rumblingStatus){
             state = Rumble.OFF;
             this.rumblingStatus = false
-        }else{
+        } else {
             this.rumblingStatus = true
         }
 
@@ -200,10 +202,10 @@ export default class WIIMote{
         }
     }
 
-    // main listener received input from the Wiimote
+    // Main listener received input from the Wiimote
     listener(event){
         var data = new Uint8Array(event.data.buffer);
-        const [byte1, byte2,    // buttons
+        const [byte1, byte2,    // Buttons
             accX, accY, accZ,   // ACC
             ir1, ir2, ir3, ir4, ir5, ir6, ir7, ir8, ir9, ir10, ir11, ir12   // IR Camera
         ] = data;

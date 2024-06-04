@@ -1,4 +1,4 @@
-/*   STYLING FOR THE PAGE   */
+/*   Styling for the page   */
 
 /*   Theme   */
 
@@ -270,6 +270,11 @@ h1 {
     font-weight: 700;
 }
 
+.description-text {
+    font-size: 0.8rem;
+    color: var(--alt-text-color);
+}
+
 /*      Main content      */
 
 main {
@@ -323,7 +328,19 @@ input {
 }
 
 input:focus {
-    border-color: var(--blue);
+    border-color: var(--red-dark);
+}
+
+/* Change input autofill styling */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active{
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: var(--main-text-color);
+    /* Note that transition here does nothing in recent Chrome browsers, it's only a fallback solution for older versions of Chrome. */
+    transition: background-color 5000s ease-in-out 0s;
+    box-shadow: inset 0 0 20px 20px #23232329;
 }
 
 .form-button-wrapper {
@@ -400,6 +417,31 @@ input:focus {
     transform: translateX(-50%) translateY(-100%);
     opacity: 1;
     transition: all 900ms cubic-bezier(0.48, 0, 0.12, 1);
+}
+
+.simple-button {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    border: 2px solid var(--main-text-color);
+    color: var(--bg-color);
+    background-color: var(--main-text-color);
+    font-family: 'Helvetica Neue';
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: inline-block;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 50px;
+    padding-right: 50px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+    transition: border-color ease-out 200ms;
+}
+
+.simple-button:hover {
+    border-color: var(--bg-color);
 }
 
 /*      Main dashboard       */
@@ -489,14 +531,35 @@ input:focus {
     padding-inline: 2.5em;
 }
 
-.controller-info {
-    font-size: 0.75rem;
-    color: var(--alt-text-color);
+.controller-button-wrapper {
+    margin-top: 2em;
+    width: 300px;
     margin-bottom: 2em;
 }
 
-.controller-button-wrapper {
-    width: 300px;
+.wii-controller-settings {
+    display: none;
+    margin-top: 4em;
+    flex-direction: row;
+    column-gap: 4em;
+    flex-wrap: wrap;
+}
+
+.wii-left-container {
+    margin: auto;
+    padding-bottom: 2em;
+}
+
+.dev-buttons-title {
+    font-size: 1.4rem;
+}
+
+.dev-buttons-wrapper {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5em;
+    width: 200px;
+    margin: auto;
 }
 
 /*      Drive Section      */
@@ -504,12 +567,13 @@ input:focus {
 .drive-section {
     display: flex;
     flex-direction: row;
-    column-gap: 3em;
+    column-gap: 5em;
     row-gap: 5em;
     flex-wrap: wrap;
     align-items: center;
     margin-bottom: 10em;
     margin-inline: 0em;
+    margin-inline: auto;
 }
 
 .wasd-wrapper {
@@ -578,6 +642,29 @@ input:focus {
     pointer-events: auto;
 }
 
+.record-buttons-wrapper {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5em;
+    width: 300px;
+    margin: auto;
+}
+
+.record-flex {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 2em;
+    row-gap: 2em;
+    flex-wrap: wrap;
+    margin: auto;
+}
+
+.record-text {
+    width: 200px;
+    margin: auto;
+}
+
 /*   Sliders   */
 
 .slider-wrapper {
@@ -641,11 +728,12 @@ input:focus {
     row-gap: 2em;
     flex-wrap: wrap;
     position: relative;
+    width: 100%;
 }
 
 .position-map {
-    width: 400px;
-    height: 400px;
+    width: 800px;
+    height: 800px;
     background-color: var(--highlight-grey);
     cursor: pointer;
     position: relative;
@@ -753,10 +841,9 @@ input:focus {
 }
 
 .position-info-description {
-    color: var(--alt-text-color);
     width: 200px;
-    font-size: 0.8rem;
     margin-top: 1em;
+    margin-bottom: 2em;
 }
 
 /*   Ending section   */
@@ -768,14 +855,21 @@ input:focus {
     margin-bottom: 4.5em;
 }
 
-.learn-more-row {
+.learn-more-wrapper {
     display: flex;
     column-gap: 2em;
+    row-gap: 1em;
     margin-bottom: 2.5em;
+    flex-wrap: wrap;
 }
 
 .learn-more-button-wrapper {
     width: 300px;
+    margin: auto;
+}
+
+.feeling-lost-h {
+    margin: auto;
 }
 
 .copyright-notice {
@@ -818,6 +912,7 @@ footer {
     border-radius: 4px;
     z-index: -1;
     transition: rotate 150ms ease-in-out;
+    /*border: 2px solid var(--highlight-grey);*/
 }
 
 .open-close-icon:hover {
@@ -908,7 +1003,7 @@ input:checked + .slider:before {
 }
 
 .credit-notice {
-    margin-left: 1.5em;
+    margin-left: 0.2em;
 }
 
 .github-mark {
@@ -947,23 +1042,52 @@ article {
 
 /*   Media, responsiveness to different screen sizes   */
 
+@media only screen and (max-width: 940px) {
+    .position-map {
+        width: 600px;
+        height: 600px;
+    }
+}
+
 @media only screen and (max-width: 740px) {
-    .logo {
+    .driverbot-info {
         display: none;
     }
 
-    .driverbot-info {
-        display: none;
+    .toprow {
+        margin-top: 0;
+    }
+
+    .menu-icon {
+        margin-top: 1em;
+    }
+
+    .menu-navtext {
+        margin-top: 0.5em;
+    }
+
+    h1 {
+        padding-top: 0.7em;
+        font-size: 2rem;
+    }
+
+    .position-map {
+        width: 500px;
+        height: 500px;
     }
 }
 
 @media only screen and (max-width: 560px) {
-    .credit-notice {
+    .menu-paragraph {
         display: none;
     }
 
-    h1 {
-        font-size: 3rem;
+    .menu-frame {
+        margin-left: -1.5em;
+    }
+
+    .credit-notice {
+        display: none;
     }
 
     .menu-navtext {
@@ -984,6 +1108,19 @@ article {
 
     .about-title {
         font-size: 2.5rem;
+    }
+
+    .position-map {
+        width: 300px;
+        height: 300px;
+    }
+
+    .record-buttons-wrapper {
+        width: 200px;
+    }
+
+    .slider-container {
+        margin-left: -2em;
     }
 }
 

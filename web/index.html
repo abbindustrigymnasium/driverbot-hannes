@@ -5,12 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>driverbot Dashboard</title>
         <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
-        <!-- MQTT -->
+        <!-- MQTT JS, latest version does not work at this time for this reason: https://github.com/mqttjs/MQTT.js/issues/1873-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/5.5.6/mqtt.min.js" integrity="sha512-ObkRCf0+KbgJowpjPsO1aJ7DHFGRZJi+LKO6o7z89Z7G6Tvij6eudc8OsL9LxXBbjcSKshMdRfRNOcS1ZHFIEw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-        <!--Latest version, does not work right now for this reason: https://github.com/mqttjs/MQTT.js/issues/1873-->
-        <!--<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>-->
-        <!-- GSAP -->
-        <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
         <link rel="stylesheet" href="style.css">
         <!-- Roboto Mono Font -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -82,7 +78,7 @@
                                 <img class="password-icon" src="./assets/hide-icon.svg" alt="password is hidden, show it">
                             </div>
                             <p class="info-time mono">Connected for </p>
-                            <p class="esp-info mono">ESP Status: </p>
+                            <p class="esp-info mono">ESP Status: disconnected</p>
                         </div>
                         <div class="disconnect-button-wrapper">
                             <button class="button" onclick="disconnect()"><span class="button-text">Disconnect &#129148;</span><span class="button-text">From MQTT</span></button>
@@ -93,29 +89,35 @@
                 <section class="configure-controller-section">
                     <div>
                         <h2>Configure Wii Controller</h2>
-                        <p class="controller-info mono">Configure a Nintendo Wii MotionPlus controller if you want to control the<br>with a wireless controller.</p>
+                        <p class="description-text mono">Configure a Nintendo Wii MotionPlus controller if you want to control the<br>with a wireless controller.</p>
                         <div class="controller-button-wrapper">
                             <button class="button" id="request-hid-device"><span class="button-text">Controller &#129149;</span><span class="button-text">Configure Wii</span></button>
                         </div>
-                        <pre id="buttons"></pre>
-                        <ul>
-                            <li><b>X: </b><span id="accX"></span></li>
-                            <li><b>Y: </b><span id="accY"></span></li>
-                            <li><b>Z: </b><span id="accZ"></span></li>
-                        </ul>
-                        <button id="rumble">Toggle Rumbling</button>
-                        <button id="led1">Toggle LED 1</button>
-                        <button id="led2">Toggle LED 2</button>
-                        <button id="led3">Toggle LED 3</button>
-                        <button id="led4">Toggle LED 4</button>
-                        <button id="irbasic">IR Basic</button>
-                        <button id="irextended">IR Extended</button>
-                        <button id="irfull">IR Full</button>
-                        <button id="coreBtns">Core Buttons</button>
-                        <button id="coreBtnsACC">Core Buttons + Accelerometer</button>
-                        <button id="coreBtnsACCIR">Core Buttons + Accelerometer + IR</button>
-                        <canvas style="width: 80%; height: 500px; background-color: black;" id="IRcanvas"></canvas>
-                        <pre id="IRdebug"></pre>
+                        <div class="wii-controller-settings">
+                            <div class="wii-left-container">
+                                <pre id="buttons-status"></pre>
+                                <ul>
+                                    <li><b>X: </b><span id="accX"></span></li>
+                                    <li><b>Y: </b><span id="accY"></span></li>
+                                    <li><b>Z: </b><span id="accZ"></span></li>
+                                </ul>
+                            </div>
+                            <div class="dev-buttons-wrapper">
+                                <h2 class="dev-buttons-title">Dev Buttons</h2>
+                                <button id="rumble" class="simple-button">Toggle Rumbling</button>
+                                <button id="led1" class="simple-button">Toggle LED 1</button>
+                                <button id="led2" class="simple-button">Toggle LED 2</button>
+                                <button id="led3" class="simple-button">Toggle LED 3</button>
+                                <button id="led4" class="simple-button">Toggle LED 4</button>
+                                <button id="irbasic" class="simple-button">IR Basic</button>
+                                <button id="irextended" class="simple-button">IR Extended</button>
+                                <button id="irfull" class="simple-button">IR Full</button>
+                                <button id="coreBtns" class="simple-button">Core Buttons</button>
+                                <button id="coreBtnsACC" class="simple-button">Core Buttons + Accelerometer</button>
+                                <button id="coreBtnsACCIR" class="simple-button">Core Buttons + Accelerometer + IR</button>
+                                <pre id="IRdebug"></pre>
+                            </div>
+                        </div>
                     </div>
                 </section>
                 <div class="section-divider"></div>
@@ -136,6 +138,14 @@
                             </div>
                         </div>
                     </div>
+                    <div class="record-flex">
+                        <div class="record-buttons-wrapper">
+                            <button class="simple-button" onclick="startRecording()">Record</button>
+                            <button class="simple-button" onclick="stopRecording()">Stop Recording</button>
+                            <button class="simple-button" onclick="playbackEvents()">Play Events</button>
+                        </div>
+                        <p class="description-text mono record-text">Using these buttons you can record a movement and play it back.</p>
+                    </div>
                     <div class="slider-wrapper">
                         <div class="slider-container">
                             <p class="slider-number" id="speed-number">Speed: 50%</p>
@@ -144,8 +154,8 @@
                     </div>
                     <div class="slider-wrapper">
                         <div class="slider-container">
-                            <p class="slider-number" id="steer-number">Steer: 55°</p>
-                            <input type="range" min="5" max="55" value="55" step="5" class="control-slider" id="steer-slider">
+                            <p class="slider-number" id="steer-number">Steer: 65°</p>
+                            <input type="range" min="5" max="65" value="65" step="5" class="control-slider" id="steer-slider">
                         </div>
                     </div>
                     <div class="position-map-wrapper">
@@ -162,7 +172,8 @@
                             <h2>Position</h2>
                             <div>
                                 <p class="position-info-text mono">x: 0 y: 0</p>
-                                <p class="position-info-description mono">This is an estimate of where the driverbot most likely is located relative to the start position. The cordinates show the distance from the start position (0, 0). 1 cordinate unit represant 1 centimeter (cm).</p>
+                                <p class="description-text position-info-description mono">This is an estimate of where the driverbot most likely is located relative to the start position. The cordinates show the distance from the start position (0, 0). 1 cordinate unit represant 1 centimeter (cm).<br><br>Note: If you click on the map you create a target. The target is only a visual guide for you to set.</p>
+                                <button class="simple-button" onclick="clearPositionTarget()">Clear Target</button>
                             </div>
                         </div>
                     </div>
@@ -170,8 +181,8 @@
             </div>
             <div class="section-divider"></div>
             <section class="ending-section">
-                <div class="learn-more-row">
-                    <h2>Feeling lost?</h2>
+                <div class="learn-more-wrapper">
+                    <h2 class="feeling-lost-h">Feeling lost?</h2>
                     <div class="learn-more-button-wrapper">
                         <a href="./about.html"><button class="button"><span class="button-text">About driverbot &#129149;</span><span class="button-text">Learn More</span></button></a>
                     </div>
@@ -202,7 +213,7 @@
             </div>
         </footer>
     </body>
-    <!-- Connect JavaScript -->
+    <!-- JavaScript -->
     <script>
         // Initialize a mqtt variable globally
         console.log(mqtt);

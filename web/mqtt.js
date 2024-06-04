@@ -1,7 +1,6 @@
-//      THIS FILE IS HANDLING MQTT RELATED THINGS
+// This file is handling MQTT related things
 
-//      MQTT connection
-
+// HTML elements
 const connectForm = document.querySelector(".connect-form");
 const mainDashboard = document.querySelector(".main-dashboard-wrapper");
 
@@ -35,6 +34,7 @@ function showDashboard() {
     mainDashboard.style.display = "block";
 }
 
+// MQTT connection variables
 let clientID;
 let username;
 let password;
@@ -48,8 +48,6 @@ let userData = {
     "steer": steer,
     "speed": speed,
     "steerAngle": steerAngle,  // This is the steer angle
-    "targetX": undefined,
-    "targetY": undefined
 };
 
 let espStatus = "disconnected";
@@ -61,14 +59,13 @@ let jsonUserData;
 function connect() {
     console.log("Connecting...");
 
-    clientID = clientIDInput.value.toString();
-    username = usernameInput.value.toString();
-    password = passwordInput.value.toString();
+    clientID = clientIDInput.value.trim();
+    username = usernameInput.value.trim();
+    password = passwordInput.value.trim();
 
     // Generate a random clientID if the user does not input one
     if (clientID == "") {
         clientID = 'mqttjs_' + Math.random().toString(16).substr(2, 8);
-        console.log("Generated clientID: " + clientID);
     }
 
     // Reset the inputs
@@ -76,10 +73,8 @@ function connect() {
     usernameInput.value = "";
     passwordInput.value = "";
 
-    //      MQTT
-
+    // Broker cluster URL
     const clusterURL = 'wss://a8900a9a.ala.eu-central-1.emqxsl.com:8084/mqtt';
-    //const clusterURL = 'wss://24481123c0884e459cd76ccc6ca6d326.s1.eu.hivemq.cloud:8884/mqtt';
 
     // Initialize the MQTT client
     client = mqtt.connect(clusterURL, {
@@ -94,7 +89,7 @@ function connect() {
         connectTimeout: 30 * 1000
     });
 
-    //      Callbacks
+    // Callbacks
 
     // Ones connected
     client.on('connect', function () {
@@ -113,27 +108,25 @@ function connect() {
     });
 
     // Called each time a message is received
-
     client.on('message', function (topic, message) {
-        // For testing: Log userData changes
-        if (topic == "userData") {
-            // Parse JSON data
-            let recievedUserData = JSON.parse(message);
-            
-            // Log received data
-            console.log("User data: ", topic, recievedUserData);   
-        }
-
         if (topic == "espData") {
             // Parse JSON data
             let recievedEspData = JSON.parse(message);
-            //infoESP.innerHTML = "ESP Status: " + recievedEspData.status;
-
             console.log("Esp Data: ", recievedEspData);
+
+            currentX = recievedEspData.currentX;
+            currentY = recievedEspData.currentY;
+
+            // Resposition the dot representing the current position of the driverbot
+            positionDot.style.left = "calc(50% - 6px + " + currentX + "px" + ")";
+            positionDot.style.top = "calc(50% - 6px + " + (currentY/-1) + "px" + ")";
+
+            positionInfoText.innerHTML = "x: " + currentX + " y: " + currentY;
         }
 
-        if (topic == "ping") {
-            if (message == "1") {
+        // If a ping is recieved, then the esp is connected
+        if (topic === "pingResponse") {
+            if (message.toString() === "1") {
                 espStatus = "connected";
             }
         }
@@ -141,16 +134,22 @@ function connect() {
 
     client.subscribe('userData');
     client.subscribe('espData');
-    client.subscribe('ping');
+    client.subscribe('pingResponse');
 
     sendUserData();
 
     // Show connection info
     infoCluster.innerHTML = "Cluster URL: " + clusterURL;
     infoPort.innerHTML = "Port: 8884";
-    infoConnectionType.innerHTML = "Connection Type: WSS (WebSocket Secure)";
+    // Use prefix of cluster url to ensure it is correct and display connection type
+    if (clusterURL.startsWith("wss://")) {
+        infoConnectionType.innerHTML = "Connection Type: WSS (WebSocket Secure)";
+    } else {
+        infoConnectionType.innerHTML = "Connection Type: Not WebSocket Secure";
+    }
+    
     infoUsername.innerHTML = "Username: " + username;
-    infoPassword.innerHTML = "Password: " + "*".repeat(password.length);
+    infoPassword.innerHTML = "Password: " + "*".repeat(password.length); // Hide passwrod by default
 
     // When all done, hide form + show the other dashboard sections
     hideConnectForm();
@@ -159,13 +158,10 @@ function connect() {
     // Start listening for WASD key presses
     startWASD();
 
-    
-
     // Set an interval for continuesly checking every 5 seconds if the ESP is connected or not, like a ping
     setInterval(() => {
         client.publish('ping', 0);
-
-        console.log(espStatus);
+        infoESP.innerHTML = "ESP Status: " + espStatus;
 
         // If the ping has not changed in 5 seconds, then the esp is disconnected (or has troubles)
         if (espStatus == "connected") {
@@ -219,5 +215,3 @@ function disconnect() {
     // Stop listening for WASD key presses
     removeWASD();
 }
-
-infoESP.innerHTML = "ESP Status: " + espStatus;
